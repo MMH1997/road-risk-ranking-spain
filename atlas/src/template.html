@@ -1,0 +1,1252 @@
+<title>Atlas Vial Provincial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout concept: a map-first stage. The map sits on a tinted "sea" field and two translucent panels float over it
+   (controls left, ranking right). Comparison and plot follow as soft panels. Pills, curves, big display type. */
+:root{
+  --bg:#f6f3ee; --surface:#ffffff; --glass:rgba(255,255,255,.74); --ink:#101a22; --ink2:#44525d; --ink3:#7b8791; --line:#e3e6e7; --soft:#eef1f1;
+  --sea1:#cfe4ec; --sea2:#e6eef0; --sea3:#f3ece1; --land-line:#ffffff;
+  --pill:#1d4f8f; --pillink:#ffffff; --acc:#12355c;
+  --t1:#e6f0fb; --t2:#fcf0d8; --t3:#def2ed; --t4:#eee7fa; --t5:#fbe6e5; --t6:#e7f1dc; --k1:#2a78d6; --k2:#e69a00; --k3:#0e9a84; --k4:#8548d6; --k5:#e34948; --k6:#5f9a2c; --shadow:0 18px 40px -18px rgba(16,26,34,.28),0 2px 6px rgba(16,26,34,.06);
+  --dlo:#2a78d6; --dmid:#f1f1ee; --dhi:#e34948; --edge:#a2a6ae; --hot:#15181d;
+  --s1:#e69a00; --s2:#0e9a84; --s3:#8548d6;
+  --font-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --font-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b1117; --surface:#141d25; --glass:rgba(17,26,34,.74); --ink:#eef2f3; --ink2:#b3bec5; --ink3:#83909a; --line:#2a3640; --soft:#1b2630;
+  --sea1:#12303d; --sea2:#0f1d27; --sea3:#1a1c1b; --land-line:#0e161d;
+  --pill:#5b9bef; --pillink:#0b1117; --acc:#b9d6fb; --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+  --t1:#13283d; --t2:#2b2315; --t3:#112b28; --t4:#231b35; --t5:#321c1d; --t6:#1a2a16; --k6:#93cf5c; --k1:#5b9bef; --k2:#f3b73a; --k3:#34c4ad; --k4:#a97df0; --k5:#f07372;
+  --dlo:#5b9bef; --dmid:#30343b; --dhi:#f07372; --edge:#5a616c; --hot:#ffffff;
+  --s1:#f3b73a; --s2:#34c4ad; --s3:#a97df0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1117; --surface:#141d25; --glass:rgba(17,26,34,.74); --ink:#eef2f3; --ink2:#b3bec5; --ink3:#83909a; --line:#2a3640; --soft:#1b2630;
+  --sea1:#12303d; --sea2:#0f1d27; --sea3:#1a1c1b; --land-line:#0e161d;
+  --pill:#5b9bef; --pillink:#0b1117; --acc:#b9d6fb; --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+  --t1:#13283d; --t2:#2b2315; --t3:#112b28; --t4:#231b35; --t5:#321c1d; --t6:#1a2a16; --k6:#93cf5c; --k1:#5b9bef; --k2:#f3b73a; --k3:#34c4ad; --k4:#a97df0; --k5:#f07372;
+  --dlo:#5b9bef; --dmid:#30343b; --dhi:#f07372; --edge:#5a616c; --hot:#ffffff;
+  --s1:#f3b73a; --s2:#34c4ad; --s3:#a97df0; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;margin:0}
+h1,h2,h3{margin:0;font-weight:inherit}
+button{font-family:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible,.prov:focus-visible,.row:focus-visible,.pt:focus-visible{outline:2px solid var(--s3);outline-offset:2px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1560px;margin:0 auto;padding-block:22px 44px}
+
+/* masthead */
+.mast{display:flex;align-items:flex-end;gap:10px 28px;flex-wrap:wrap;margin-bottom:18px}
+.mast h1{color:var(--acc);font-family:var(--font-display);font-weight:700;font-size:clamp(30px,4.4vw,52px);line-height:1;letter-spacing:-.025em;font-variation-settings:"opsz" 96}
+.mast .tag{font-size:13.5px;color:var(--ink2);flex:1 1 240px;min-width:0;padding-bottom:5px}
+.lang{display:flex;background:var(--soft);border-radius:999px;padding:3px;gap:2px;align-self:flex-start}
+.lang button{border:0;background:transparent;color:var(--ink2);font-weight:600;font-size:12.5px;letter-spacing:.04em;padding:5px 13px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--pill);color:var(--pillink)}
+
+/* stage */
+.stage{position:relative;border-radius:34px;overflow:hidden;
+  background:radial-gradient(900px 520px at 78% 8%,var(--sea1),transparent 70%),radial-gradient(700px 460px at 12% 96%,var(--sea3),transparent 70%),linear-gradient(165deg,var(--sea2),var(--sea2));
+  display:grid;grid-template-columns:300px minmax(0,1fr) 392px;gap:0;padding:16px}
+.stage>.mapbox{grid-column:1/-1;grid-row:1;padding:0 calc(392px + 10px) 0 calc(300px + 10px);display:flex;align-items:center;justify-content:center;min-width:0}
+.panel{position:relative;z-index:2;background:var(--glass);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);border-radius:26px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.5);min-width:0}
+:root[data-theme="dark"] .panel{border-color:rgba(255,255,255,.07)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .panel{border-color:rgba(255,255,255,.07)}}
+.pl{grid-column:1;grid-row:1;align-self:start;padding:20px 18px 18px}
+.pr{grid-column:3;grid-row:1;align-self:start;padding:18px 16px 10px}
+.pt2{font-family:var(--font-display);font-weight:650;font-size:17px;letter-spacing:-.01em;margin:0 0 4px}
+.cap{font-size:12px;color:var(--ink3)}
+.lede{margin:0 0 16px;color:var(--ink2);font-size:14px;line-height:1.5}
+.lbl2{font-size:11.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin:0 0 8px}
+.sub{color:var(--ink2);font-size:13px;margin:0 0 8px;line-height:1.45}
+
+/* pills */
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--soft);border-radius:999px;padding:4px;gap:2px;margin-bottom:18px}
+.tabs button{border:0;background:transparent;color:var(--ink2);font-weight:600;font-size:13.5px;padding:8px 6px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+.tabs button[aria-pressed="true"]{background:var(--pill);color:var(--pillink)}
+.layers{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.layers button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 13px;font-size:13.5px;font-weight:500;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.layers button:hover{border-color:var(--ink3)}
+.layers button[aria-checked="true"]{background:var(--pill);color:var(--pillink);border-color:var(--pill)}
+.layers .mk{display:none}.layers b{font-weight:inherit}
+.pop{position:absolute;z-index:4;width:326px;max-width:calc(100% - 16px);background:var(--surface);color:var(--ink2);border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 50px -14px rgba(16,26,34,.45),0 2px 8px rgba(16,26,34,.12);padding:14px 16px 14px;font-size:13px;line-height:1.5;animation:popin .18s ease-out}
+@keyframes popin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.pop{animation:none}}
+.pop[hidden]{display:none}
+.pop b{color:var(--ink);font-weight:600}
+.pop .pclose{position:absolute;top:9px;right:9px;width:28px;height:28px;border-radius:50%;border:0;background:var(--soft);color:var(--ink);cursor:pointer;font-size:13px;line-height:1}
+.pop .pclose:hover{background:var(--line)}
+.pop .ph{display:flex;align-items:center;gap:8px;padding-right:32px;margin-bottom:6px;font-family:var(--font-display);font-size:17px;font-weight:650;color:var(--ink);letter-spacing:-.01em;line-height:1.2}
+.pop .ph small{font-family:var(--font-body);font-size:12px;font-weight:400;color:var(--ink3)}
+.pop .pr2{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-top:1px solid var(--line)}
+.pop .pr2 span:first-child{color:var(--ink2)}.pop .pr2 span:last-child{color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+.pop .pr2 small{display:block;color:var(--ink3);font-size:11.5px}
+.pop.sheet{position:fixed;left:8px!important;right:8px;bottom:8px;top:auto!important;width:auto;max-width:none;max-height:55vh;z-index:20}
+.pop .near .lk a{display:inline-block;margin-right:12px;padding:1px 0;font-size:12px}
+.pop .near{margin-top:6px;padding-top:6px}
+.pop{max-height:min(560px,calc(100vh - 32px));overflow:auto}
+.pop .pr2 span:last-child{white-space:nowrap}
+.pop .pn{margin-top:6px;font-size:12px;color:var(--ink3)}
+.pop .near:first-of-type{margin-top:6px}
+@media (min-width:861px){.pl.hascell{display:flex;flex-direction:column}.pl.hascell .lede,.pl.hascell .layerdesc{display:none}.pl.hascell .cellinfo.full{order:-1;margin:0 0 16px}}
+.cellinfo.full{position:relative;padding:14px 14px 12px;color:var(--ink2)}
+.cellinfo.full b{color:var(--ink);font-weight:600}
+.cellinfo.full .pclose{position:absolute;top:9px;right:9px;width:28px;height:28px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);cursor:pointer;font-size:13px;line-height:1}
+.cellinfo.full .ph{display:flex;align-items:center;gap:8px;padding-right:32px;margin-bottom:6px;font-family:var(--font-display);font-size:17px;font-weight:650;color:var(--ink);letter-spacing:-.01em;line-height:1.2;flex-wrap:wrap}
+.cellinfo.full .ph small{font-family:var(--font-body);font-size:12px;font-weight:400;color:var(--ink3)}
+.cellinfo.full .pr2{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-top:1px solid var(--line)}
+.cellinfo.full .pr2 span:first-child{color:var(--ink2)}
+.cellinfo.full .pr2 span:last-child{color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cellinfo.full .pr2 small{display:block;color:var(--ink3);font-size:11.5px}
+.cellinfo.full .pn{margin-top:6px;font-size:12px;color:var(--ink3)}
+.cellinfo.full .near .lk a{display:inline-block;margin-right:12px;padding:1px 0;font-size:12px}
+.pop.mini{width:auto;max-width:220px;padding:7px 28px 7px 11px;border-radius:12px;font-size:12.5px;line-height:1.35}
+.pop.mini .pclose{top:4px;right:4px;width:22px;height:22px;font-size:11px}
+.pop.mini .mn{display:block;color:var(--ink);font-weight:600}
+.pop.mini .mv{display:block;color:var(--ink2);font-variant-numeric:tabular-nums}
+.layerdesc{font-size:13px;color:var(--ink2);margin:0 0 14px;line-height:1.5}
+.ramp{height:12px;border-radius:999px}
+.ticks{position:relative;height:18px;font-size:11.5px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.ticks span{position:absolute;transform:translateX(-50%);top:4px;white-space:nowrap}
+.legnote{font-size:12px;color:var(--ink3);margin:2px 0 12px;line-height:1.45}
+.check{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink2);cursor:pointer;user-select:none}
+.check input{accent-color:var(--s3);width:16px;height:16px;margin:0}
+.cellinfo{font-size:13px;color:var(--ink2);background:var(--soft);border-radius:16px;padding:11px 13px;margin:12px 0 0;line-height:1.5}
+.cellinfo b{color:var(--ink);font-weight:600}
+.near{margin-top:9px;padding-top:8px;border-top:1px solid var(--line)}
+.near .nh{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:2px}
+.near .nm1{display:block;color:var(--ink)}
+.near .lk a{display:block;color:var(--ink);text-decoration:underline;text-decoration-color:var(--ink3);text-underline-offset:3px;padding:2px 0}
+.near .lk a:hover{text-decoration-color:var(--ink)}
+.near .nm1 small{color:var(--ink3);font-size:12px}
+
+/* map */
+svg{display:block;max-width:100%}
+#map{width:100%;height:auto;max-height:820px}
+.sb{stroke:var(--ink2);stroke-width:1.6px;fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.sbt{font-size:15px;fill:var(--ink2);font-family:var(--font-body)}
+.prov{stroke:var(--land-line);stroke-width:.9px;stroke-linejoin:round;vector-effect:non-scaling-stroke;cursor:pointer;transition:fill .3s}
+.ol{fill:none;vector-effect:non-scaling-stroke;pointer-events:none;stroke-linejoin:round;stroke-linecap:round}
+.ol.sig{stroke:var(--ink);stroke-width:1.4px}
+.ol.halo{stroke:var(--land-line);stroke-width:7px;opacity:.95}
+.ol.sel{stroke-width:3.6px}
+.ol.hov{stroke:var(--ink);stroke-width:2.2px}
+.ol.hot{stroke:var(--ink);stroke-width:1.3px}
+.frame{fill:none;stroke:var(--ink3);stroke-opacity:.5;stroke-dasharray:2 6;stroke-linecap:round;stroke-width:1.4px;vector-effect:non-scaling-stroke}
+.flabel{font-size:19px;fill:var(--ink3);font-family:var(--font-body);font-weight:500}
+.hotc{fill:var(--hot);fill-opacity:.82;stroke:var(--land-line);stroke-width:.5px;vector-effect:non-scaling-stroke;pointer-events:none}
+.cell{stroke:none;shape-rendering:crispEdges;cursor:pointer;transition:opacity .35s}
+.cell.dim{opacity:.16}
+.bord{fill:none;stroke:var(--ink3);stroke-width:.7px;vector-effect:non-scaling-stroke;pointer-events:none;opacity:.6}
+.cellview .prov{fill:var(--surface)!important;pointer-events:none;stroke:none}
+
+/* ranking */
+.rank svg{width:100%;height:auto;max-width:440px;margin:0 auto}
+.rank .lbl{font-size:11px;fill:var(--ink2);font-family:var(--font-body)}
+.rank .row .hit{fill:transparent}
+.rank .row.hov .hit{fill:var(--soft)}
+.rank .row{cursor:pointer}
+.rank .row.sel .lbl{fill:var(--ink);font-weight:600}
+.rank .grid-l{stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke}
+.rank .refl{stroke:var(--ink);stroke-width:1.3;vector-effect:non-scaling-stroke}
+.rank .wh{stroke:var(--ink3);stroke-width:1.4;stroke-linecap:round;vector-effect:non-scaling-stroke;opacity:.8}
+.rank .ax{font-size:10.5px;fill:var(--ink2);font-variant-numeric:tabular-nums;font-family:var(--font-body)}
+.rank .tipc{fill:var(--ink3)}
+.tablewrap{overflow-x:auto}
+table.top{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:12.5px}
+.top{width:100%;font-size:13px}
+.top th,.top td{padding:5px 2px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.top th{font-weight:600;color:var(--ink3);font-size:10.5px;position:sticky;top:0}
+.top td:nth-child(2),.top th:nth-child(2){text-align:left}
+.top td small{display:block;color:var(--ink3);font-size:11px;max-width:78px;overflow:hidden;text-overflow:ellipsis}
+.top td:first-child,.top th:first-child{text-align:left;color:var(--ink3);padding-left:0}
+.top tr[data-i]{cursor:pointer}.top tr[data-i]:hover{background:var(--soft)}.top tr.sel{background:var(--soft);font-weight:600}
+i.up,i.dn{font-style:normal;font-size:9px;margin-right:4px;vertical-align:1px}
+i.up{color:var(--dhi)} i.dn{color:var(--dlo)}
+
+/* lower panels */
+.lower{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;margin-top:20px;align-items:start}
+.card{background:var(--t,var(--surface));border-radius:30px;padding:24px 26px 26px;min-width:0;box-shadow:0 1px 0 var(--line)}
+.c1{--t:var(--t1);--k:var(--k1)}.c2{--t:var(--t2);--k:var(--k2)}.c3{--t:var(--t3);--k:var(--k3)}.c4{--t:var(--t4);--k:var(--k4)}.c5{--t:var(--t5);--k:var(--k5)}.c6{--t:var(--t6);--k:var(--k6)}
+.card h2::before{content:"";display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--k);margin-right:11px;vertical-align:2px}
+.wide{grid-column:1/-1}
+.scat{position:relative}.scat h2{padding-right:46px}
+.zbtn{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);cursor:pointer;font-size:17px;line-height:1;opacity:.8;display:grid;place-items:center}
+.zbtn:hover{opacity:1}
+.zbtn::before{content:"⤢"}.zoom .zbtn::before{content:"✕"}
+#zbd{position:fixed;inset:0;z-index:24;background:rgba(8,14,20,.55)}
+#zbd[hidden]{display:none}
+body.zooming{overflow:hidden}
+.card.zoom{position:fixed;z-index:25;left:50%;top:50%;transform:translate(-50%,-50%);width:min(1120px,94vw);max-height:94vh;overflow:auto;padding:26px 30px 28px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
+.card.zoom svg{max-height:66vh;margin:0 auto}
+.card.zoom .sub{font-size:14.5px;max-width:90ch}
+.col{display:flex;flex-direction:column;gap:20px;min-width:0}
+.col .card{padding:22px 24px 24px}.col .card h2{font-size:21px}
+.card h2{font-family:var(--font-display);font-weight:650;font-size:24px;letter-spacing:-.02em;margin:0 0 14px;line-height:1.1}
+.top td b{font-weight:700}
+#rank .pl{fill:var(--ink3);font-size:9px;font-variant-numeric:tabular-nums}
+#rank .vl{fill:var(--ink2);font-size:9.5px;font-variant-numeric:tabular-nums}
+.btn[aria-pressed="true"]{background:var(--pill);color:var(--pillink)}
+.toolbar[hidden]{display:none}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.toolbar label{font-size:13px;color:var(--ink2)}
+select{font:inherit;font-size:13.5px;background:var(--soft);color:var(--ink);border:0;border-radius:999px;padding:7px 14px;max-width:100%}
+.btn{font:inherit;font-size:13px;border:0;background:var(--soft);color:var(--ink);border-radius:999px;padding:7px 15px;cursor:pointer;font-weight:500}
+.btn:hover{background:var(--line)}
+.empty{color:var(--ink2);font-size:13px;margin:0 0 12px}
+table.cmp{border-collapse:separate;border-spacing:0;width:100%;min-width:520px;font-variant-numeric:tabular-nums}
+.cmp th,.cmp td{padding:8px 10px;text-align:right;vertical-align:top;border-bottom:1px solid var(--line)}
+.cmp th:first-child,.cmp td:first-child{text-align:left;padding-left:0;color:var(--ink2);font-weight:400;width:29%;min-width:160px}
+.cmp td{white-space:nowrap}.cmp td:first-child{white-space:normal}.cmp th.spain,.cmp td.spain{width:13%}
+.cmp thead th{font-weight:600;color:var(--ink);vertical-align:bottom;border-bottom:0}
+.cmp tr.sect td{padding-top:24px;font-family:var(--font-display);font-size:15px;color:var(--acc);border-bottom:0;font-weight:650}
+.cmp td small{display:block;color:var(--ink3);font-size:12px;white-space:normal;max-width:170px;margin-left:auto}
+.cmp td.spain,.cmp th.spain{color:var(--ink3)}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--soft);border-radius:999px;padding:4px 6px 4px 11px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.rm{border:0;background:transparent;color:var(--ink3);cursor:pointer;padding:0 3px;font-size:15px;line-height:1}
+td b.z3{color:var(--ink)}
+.scat svg{width:100%;height:auto}
+.scat .gl{stroke:var(--ink3);stroke-opacity:.22;vector-effect:non-scaling-stroke}
+.scat .rl{stroke:var(--ink3);stroke-dasharray:4 4;vector-effect:non-scaling-stroke}
+.scat .ci{stroke:var(--ink3);stroke-width:1;opacity:.3;vector-effect:non-scaling-stroke}
+.scat .pt{fill:var(--dlo);fill-opacity:.8;stroke:var(--surface);stroke-width:1.3;vector-effect:non-scaling-stroke;cursor:pointer}
+.scat .pt.hov{stroke:var(--ink);stroke-width:2px}
+.scat text{font-family:var(--font-body)}
+.scat .tk{font-size:10.5px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.scat .ql{font-size:10.5px;fill:var(--ink3)}
+.scat .nm{font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}
+.scat .band{fill:var(--k);fill-opacity:.11;stroke:none}
+.scat .lim{fill:none;stroke:var(--k);stroke-width:1.3;vector-effect:non-scaling-stroke}
+.scat .lim2{stroke-dasharray:3 4;opacity:.8}
+.scat .bar{cursor:pointer}
+.scat .bt{font-size:10.5px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.scat .bv{font-size:10.5px;fill:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.scat .gn{font-size:11.5px;fill:var(--ink);font-weight:600}
+.scat .axl{font-size:11.5px;fill:var(--ink2)}
+details.how{margin-top:20px;background:var(--t2);border-radius:26px;padding:6px 26px}
+summary{cursor:pointer;list-style:none;font-family:var(--font-display);font-weight:650;font-size:19px;letter-spacing:-.01em;padding:16px 0;display:flex;align-items:center;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--soft);font-family:var(--font-body);font-weight:500;font-size:17px}
+details[open] summary::before{content:"−"}
+details ul{margin:0;padding:0 0 14px 22px;color:var(--ink2);max-width:100ch}
+details li{margin-bottom:8px}
+footer{margin-top:20px;color:var(--ink3);font-size:12.5px;max-width:110ch}
+#tip{position:fixed;z-index:30;pointer-events:none;background:var(--surface);color:var(--ink);border-radius:14px;font-size:12.5px;line-height:1.45;padding:9px 12px;max-width:270px;display:none;box-shadow:0 14px 34px -10px rgba(16,26,34,.4),0 0 0 1px var(--line)}
+#tip b{font-weight:600}
+#tip span{color:var(--ink2);display:block}
+
+@media (max-width:1260px){
+  .stage{grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:16px}
+  .stage>.mapbox{grid-column:2;grid-row:1;padding:0}
+  .pl{grid-column:1;grid-row:1}
+  .pr{grid-column:1/-1;grid-row:2}
+}
+@media (max-width:860px){
+  .stage{display:flex;flex-direction:column;padding:12px;border-radius:26px}
+  .stage>.mapbox{order:2;padding:0}
+  .pl{order:1}.pr{order:3}
+  .lower{grid-template-columns:minmax(0,1fr)}
+  .card{padding:20px 18px 22px;border-radius:26px}
+}
+</style>
+
+<div class="wrap gut">
+<header class="mast">
+  <h1 data-i="h1"></h1>
+  <span class="tag" data-i="kicker"></span>
+  <div class="lang" role="group" aria-label="Language / Idioma">
+    <button type="button" id="l-en" aria-pressed="false">EN</button>
+    <button type="button" id="l-es" aria-pressed="false">ES</button>
+  </div>
+</header>
+
+<div class="stage">
+  <div class="mapbox"><svg id="map" role="group" aria-label="Map of the 52 provincial units"></svg></div>
+
+  <aside class="panel pl" aria-label="Controls">
+    <p class="lede" data-i="lede"></p>
+    <div class="tabs" role="group" aria-label="View">
+      <button type="button" id="v-prov" aria-pressed="true"></button>
+      <button type="button" id="v-cell" aria-pressed="false"></button>
+    </div>
+    <h2 class="lbl2" id="h-map" data-i="measLbl"></h2>
+    <div class="layers" role="radiogroup" id="layers" aria-label="Measure"></div>
+    <p class="layerdesc" id="layerdesc"></p>
+    <div class="ramp" id="ramp"></div>
+    <div class="ticks" id="ticks"></div>
+    <p class="legnote" id="legnote"></p>
+    <label class="check" id="hotlbl"><input type="checkbox" id="hot"> <span data-i="hotToggle"></span></label>
+    <div id="cellinfo" class="cellinfo" hidden></div>
+  </aside>
+
+  <div id="pop" class="pop" role="dialog" hidden></div>
+
+  <section class="panel pr rank" aria-labelledby="h-rank">
+    <h2 class="pt2" id="h-rank"></h2>
+    <p class="sub" id="ranksub"></p>
+    <div class="toolbar" id="rankbar"><button type="button" class="btn" id="sortdir" aria-pressed="false"></button><button type="button" class="btn" id="more" hidden></button></div>
+    <svg id="rank" role="group" aria-label="Ranking"></svg>
+    <div class="toolbar" id="cprovbar" hidden><label for="cprov" id="cprovlbl"></label><select id="cprov"></select></div>
+    <div id="celltop" class="tablewrap" hidden></div>
+  </section>
+</div>
+
+<div class="lower">
+  <div class="col" id="colL">
+  <section class="card c1" aria-labelledby="h-cmp">
+    <h2 id="h-cmp" data-i="cmpTitle"></h2>
+    <div class="toolbar">
+      <label for="add" data-i="addLabel"></label>
+      <select id="add"></select>
+      <button type="button" class="btn" id="clear" data-i="clear"></button>
+    </div>
+    <p class="empty" id="cmpempty"></p>
+    <div class="tablewrap"><table class="cmp" id="cmp"></table></div>
+  </section>
+  </div>
+
+  <div class="col" id="colR">
+  <section class="card scat c2" id="c-sc" aria-labelledby="h-sc"><button type="button" class="zbtn"></button>
+    <h2 id="h-sc" data-i="scTitle"></h2>
+    <p class="sub" data-i="scSub"></p>
+    <svg id="sc" role="group" aria-label="Frequency against severity"></svg>
+    <p class="legnote" data-i="scNote" style="margin-top:10px"></p>
+  </section>
+  <section class="card scat c3" id="c-fn" aria-labelledby="h-fn"><button type="button" class="zbtn"></button>
+    <h2 id="h-fn" data-i="fnTitle"></h2>
+    <p class="sub" data-i="fnSub"></p>
+    <svg id="fn" role="group" aria-label="Population against deaths per million"></svg>
+  </section>
+  <section class="card scat c4" id="c-wy" aria-labelledby="h-wy"><button type="button" class="zbtn"></button>
+    <h2 id="h-wy" data-i="whyTitle"></h2>
+    <p class="sub" data-i="whySub"></p>
+    <svg id="wy" role="group" aria-label="Frequency, seriousness and deaths per fatal crash against Spain"></svg>
+  </section>
+  <section class="card scat c6" id="c-ri" aria-labelledby="h-ri"><button type="button" class="zbtn"></button>
+    <h2 id="h-ri" data-i="riTitle"></h2>
+    <p class="sub" data-i="riSub"></p>
+    <svg id="ri" role="group" aria-label="Plausible places in the ranking of the risk of dying"></svg>
+  </section>
+  <section class="card scat c5" id="c-ht" aria-labelledby="h-ht"><button type="button" class="zbtn"></button>
+    <h2 id="h-ht" data-i="hotTitle"></h2>
+    <p class="sub" data-i="hotSub"></p>
+    <svg id="ht" role="group" aria-label="Provinces with the highest share of hot cells"></svg>
+  </section>
+  </div>
+</div>
+
+<details class="how">
+  <summary><span data-i="howTitle"></span></summary>
+  <ul id="how"></ul>
+</details>
+<footer data-i="foot"></footer>
+</div>
+<div id="zbd" hidden></div>
+<div id="tip" role="tooltip"></div>
+
+
+<script>
+const D=/*DATA*/;
+const NS='http://www.w3.org/2000/svg';
+const P=D.provs, byC={}; P.forEach(p=>byC[p.c]=p);
+const Z95=1.96, Z998=3.09;
+
+/* ---------------- text ---------------- */
+const TXT={
+en:{
+ kicker:'Road crashes recorded by the DGT, 2022–2025 · 50 provinces, Ceuta and Melilla',
+ h1:'Provincial road-safety atlas',
+ lede:'Where do most people die on the road, and why? Pick a measure on the map, then click up to three provinces to compare them.',
+ howTitle:'How to read this page',
+ mapTitle:'Map', mapCap:'Canarias, Ceuta and Melilla in boxes', viewLbl:'View', measLbl:'Measure',
+ hotToggle:'Show hot cells (areas of 10 × 10 km)',
+ viewProv:'Provinces', viewCell:'10 km areas',
+ cellLayers:{cebc:['Fatal crashes per road (adj.)','Per 100 km of road, per year'],ckeb:['Crashes per road (adj.)','All crashes with casualties, per 100 km'],ckraw:['Crashes per road (obs.)','As recorded, no correction'],cz:['Hot areas','Where fatal crashes pile up'],cfat:['Fatal crashes','Number in each area'],craw:['Fatal crashes per road (obs.)','As recorded, no correction'],cpop:['People nearby','Residents within 20 km']},
+ cdesc:{
+  cebc:'Fatal crashes per 100 km of road per year, 2022–2025. It is an estimate: where an area has very little road, the figure is pulled towards the average so that a single crash does not distort the map. Switch to “as recorded” to see it without the correction.',
+  cz:'Shows whether the area and the eight around it have more fatal crashes than chance would explain. The redder, the more they pile up. Areas that are clearly in this situation are marked with a dark outline and called hot cells.',
+  craw:'The same figure with no correction: fatal crashes divided by the road and by the four years, exactly as the data give it. Where an area has very little road, one crash more or less changes it a lot, so the map is patchier than the estimated one. Compare the two to see which areas change.',
+  ckeb:'Crashes with at least one casualty per 100 km of road per year, 2022–2025: it counts every crash, not only fatal ones, so it shows where crashes of any severity are most frequent along the road. Like the fatal measure it is an estimate that moves towards the average where there is little road. The road length is the same, but traffic volumes are not known, so a busy road will rank high.',
+  ckraw:'The same figure with no correction: crashes with casualties divided by the road and by the four years. Areas with very little road can reach extreme values with a handful of crashes, so read it together with the road kilometres in the list.',
+  cfat:'Fatal crashes whose position could be placed inside each area during 2022–2025.',
+  cpop:'Adds up the people who live in the municipalities whose centre is within 20 km of the middle of the area (1 January 2021). Whole municipalities are counted, so it is a rough idea of who lives around.'},
+ cvals:{ckeb:'Crashes with casualties per 100 km of road and year',ckraw:'Crashes with casualties per 100 km of road and year (as recorded)',craw:'Fatal crashes per 100 km of road and year (as recorded)',cebc:'Fatal crashes per 100 km of road and year',cz:'Concentration of fatal crashes',cfat:'Fatal crashes 2022–2025',cpop:'Residents within 20 km'},
+ cLegRaw:(r,k)=>'Grey = the average of the areas studied ('+r+(k?' crashes with casualties':' fatal crashes')+' per 100 km of road and year). Same colours, but with no correction: '+(k?'':'areas with no fatal crash are the darkest blue and ')+'areas with little road and a couple of crashes can be very red.',
+ cLegRef:(r,k)=>'Grey = the average of the areas studied ('+r+(k?' crashes with casualties':' fatal crashes')+' per 100 km of road and year). Red = more, blue = less. Dark outline: hot cell.',
+ cLegZ:'Red = more fatal crashes than usual in the area and its surroundings, blue = fewer. Dark outline: hot cell.',
+ zLo:'fewer', zMid:'usual', zHi:'more', zLvl:['very high','high','usual','low'], inh:'residents',
+ cLegFat:m=>'The redder, the more fatal crashes (the top colour is reached at '+m+' or more). Dark outline: hot cell.',
+ cLegPop:'The redder, the more people live in nearby municipalities (from 1 000 to 10 million). Dark outline: hot cell.',
+ cTopT:(n,a,p)=>'The '+n+(a?' lowest':' highest')+' areas'+(p?' in '+p:''), rankT:a=>a?'Ranking, lowest first':'Ranking', sortHi:'Highest first', sortLo:'Lowest first', sortTip:'Reverse the order of the list', more:'Show 100', less:'Show 30', cAllProv:'All provinces', cProvLbl:'Show areas of', cTopSub:'Ordered by the measure you picked. Click a row to find the area on the map. The province is the one that contains the middle of the area, and below it is the nearest municipality.',
+ cols:{prov:'Province',fatal:'Fatal',crashes:'Crashes',km:'Road km',eb:'Per 100 km',raw:'As recorded',m:{cebc:'Fatal per 100 km',craw:'Fatal per 100 km (as rec.)',ckeb:'Crashes per 100 km',ckraw:'Crashes per 100 km (as rec.)'}},
+ cHint:'Click an area on the map, or a row of the list, for details. White = not analysed: it has little road, or no crash could be placed there. Canarias and Melilla have no areas; Ceuta has two, in the Strait.',
+ cInfo:(c,prov,ex,ny)=>'<b>'+prov+'</b> · area of 10 × 10 km (UTM 30N: x '+ex+', y '+ny+')<br>'+c,
+ cInfoBody:(o)=>o.fatal+' fatal crashes out of '+o.crashes+' with casualties, on '+o.km+' km of road in four years.<br>Observed: '+o.raw+' per 100 km and year. Estimated: '+o.eb+' (it moves towards the average when there is little road).<br>All crashes with casualties per 100 km and year: observed '+o.kraw+', estimated '+o.keb+'.<br>Hot cell: <b>'+(o.hot?'yes':'no')+'</b>',
+ cTip:(o)=>o.fatal+' fatal · '+o.crashes+' crashes · '+o.km+' km of road',
+ hotTip:'Hot cell',
+ mapsLbl:'See it on a map', gm:'Google Maps (satellite)', osm:'OpenStreetMap, area outlined', gj:'Outline of the area on a map (geojson.io)', nearLbl:'Nearest municipalities', bigLbl:'Largest within 20 km', popLbl:'Residents within 20 km', kmU:' km', nearTip:'Near',
+ rankTitle:'Ranking',
+ rankSub:'Same measure as the map, from the highest to the lowest. The dot is the estimate and the line shows how much it could vary. If the lines of two provinces overlap, we cannot be sure which one is higher.',
+ between:'between', and:'and',
+ cmpTitle:'Compare provinces', addLabel:'Add a province', addPh:'Choose…', clear:'Clear selection',
+ cmpEmpty:'Click provinces on the map, in the ranking or in the plot, or use the list. A fourth choice replaces the oldest one.',
+ scTitle:'Many crashes or serious ones?',
+ popL:{rate:'Deaths per million',R:'Risk of dying (adj.)',cpi:'Crashes per 1 000 inh. (obs.)',fat:'Fatal share of crashes (adj.)',tot:'Crashes · fatal · deaths',hot:'Hot cells'},
+ popC:{area:'area of 10 × 10 km',fc:'Fatal / casualty crashes',km:'Road in the area',f:'Fatal per 100 km·yr (adj.)',k:'Casualty crashes per 100 km·yr (adj.)',obs:'obs.',hot:'Hot cell',yes:'yes',no:'no'},
+ popFatal:'Share of crashes that are fatal (adj.)', popPlace:n=>'place '+n+' / 52', popIn:'In the comparison below. Click again to remove it.', popOut:'Added to the comparison below.',
+ riTitle:'Where could each province really rank?', riSub:'Place on the adjusted risk of dying among the 52 units (1 = most deaths per inhabitant). The dot is the best estimate and the bar the places that are plausible; the shaded zone is the ten highest. On the right: place (range) and the chance of being among the ten highest.',
+ zOpen:'Enlarge', zClose:'Close',
+ fnTitle:'Does size matter?', fnSub:'Each dot is a province: its population against the deaths per million recorded. Small provinces swing widely just by chance. Inside the shaded band (99.8%) the difference from Spain could be chance; the dashed lines mark 95% and 99.8%. Red or blue dots are outside it.', fnX:'Population, 1 January 2025 (log scale)', fnY:'Deaths per million per year',
+ whyTitle:'What drives each province?', whySub:'For the provinces you picked (click on the map, the ranking or here): how many times more or fewer crashes per inhabitant, how much more serious, and how many deaths per fatal crash, compared with Spain. The last bar is the product, the risk of dying.', whyRows:['Crashes per inhabitant','Share that are fatal','Deaths per fatal crash','Risk of dying'], whyEmpty:'Pick a province on the map or in the ranking to see what drives its risk.',
+ hotTitle:'Where hot cells concentrate', hotSub:'Provinces with the highest share of hot cells among their analysed 10 × 10 km cells (at least 20 cells). Next to each bar: share, hot cells and analysed cells. Click a bar to add the province.',
+ scSub:'Each dot is a province. The further right, the more crashes with casualties per inhabitant than the Spanish average; the higher up, the more likely it is that a crash ends in death. The grey lines show how much each value could vary.',
+ scNote:'There is a clear pattern: provinces with fewer crashes per inhabitant tend to have more serious ones, and provinces with more crashes tend to have less serious ones.',
+ spain:'Spain', avg:'national level',
+ layers:{
+  risk:['Deaths per million','What was recorded'],
+  R:['Risk of dying','Adjusted estimate'],
+  F:['Crashes per inhabitant (adj.)','Adjusted estimate'],
+  fraw:['Crashes per inhabitant (obs.)','As recorded, per 1 000 residents and year'],
+  L:['Seriousness','Adjusted estimate'],
+  share:['Share of fatal crashes (adj.)','Corrected percentage'],
+  shareRaw:['Share of fatal crashes (obs.)','As recorded, without correction']},
+ desc:{
+  risk:'People who died within 30 days per million inhabitants per year, 2022–2025. Grey means about the same as Spain as a whole.',
+  R:'How many times more (or fewer) deaths per inhabitant than the Spanish average. It is an estimate that also looks at the neighbouring provinces, so that a province with little data is not the best or the worst just by chance. 1 = same as Spain.',
+  F:'How many times more (or fewer) crashes with casualties per inhabitant than the Spanish average. 1 = same as Spain.',
+  fraw:'Crashes with at least one casualty per 1 000 residents and year, 2022–2025, as the data give them: crashes divided by the population and by the four years. There is no correction, so small provinces move more by chance, and provinces with many visitors or through traffic can show high values without their residents being more at risk. Grey = Spain as a whole.',
+  L:'How likely a crash with casualties is to end in a death compared with the Spanish average, leaving aside that roads outside towns are more serious than streets. A value of 2 means roughly twice as likely.',
+  share:'Of every 100 crashes with casualties, how many end in a death within 30 days. Provinces with little data are corrected so that they do not mislead.',
+  shareRaw:'The same percentage exactly as it comes out of the data, with no correction. Small provinces such as Ceuta, Melilla or Soria can look extreme only because they have few crashes; compare it with the corrected view.'},
+ vals:{risk:'Deaths per million inhabitants per year',R:'Risk of dying (times the Spanish average)',F:'Crashes per inhabitant (times the average)',L:'Seriousness of crashes (times the average)',share:'Fatal crashes (% of crashes with casualties)',shareRaw:'Fatal crashes (% of crashes with casualties), as recorded',fraw:'Crashes with casualties per 1 000 inhabitants and year'},
+ legRef:r=>'Grey = '+r+' (the Spanish average). Red = more, blue = less.', legOut:'Dark outline: the difference from Spain is clear and does not look like chance.',
+ tipExcl:'Clearly different from Spain',
+ tipLine:(d,c)=>d+' deaths · '+c+' crashes with casualties',
+ sec:{tot:'Totals 2022–2025',risk:'Risk per inhabitant',drv:'Why: compared with Spain',bym:'Adjusted estimates',fat:'Fatal crashes (% of crashes with casualties)',hs:'Hot cells'},
+ row:{
+  pop:'Population, 1 Jan 2025',crashes:'Crashes with casualties',fatal:'Fatal crashes',deaths:'Deaths within 30 days',
+  rate:'Deaths per million inhabitants per year',ratio:'Times the Spanish average',rank:'Place (1 = most deaths per inhabitant)',
+  cpi:'Crashes with casualties per 1 000 inhabitants and year',cpiRank:'Place (1 = most crashes per inhabitant)',
+  freq:'Crashes per inhabitant',sev:'Share of crashes that are fatal',mult:'Deaths per fatal crash',prod:'Result: risk compared with Spain',
+  L:'Seriousness',F:'Crashes per inhabitant',R:'Risk of dying',
+  rawA:'All roads (as recorded)',ebA:'All roads (corrected)',ebI:'Roads outside towns only (corrected)',
+  hot:'Hot cells of 10 × 10 km'},
+ rk:(m,a,b)=>'place '+m+' (between '+a+' and '+b+')', top10:t=>'chance of top 10: '+t,
+ flagNote:'▲ ▼ = clearly above or below Spain. In brackets, the range where the real value probably lies.',
+ how:[
+  'Colour compares each province with Spain: red means more than the average, blue less, grey about the same. A dark outline means that the difference is clear and does not look like chance.',
+  'Small provinces have few crashes, so their figures jump around from one year to the next. That is why each point of the ranking has a line: the longer it is, the less certain the value. If the lines of two provinces overlap, we cannot say which one is higher.',
+  'Risk is measured per inhabitant, not per kilometre driven. A province with a lot of tourism or through traffic for its population can look more dangerous than it is for those who live there.',
+  'The “adjusted” measures are estimates that also take into account the neighbouring provinces and the national average. This prevents a province with little data from being the best or the worst only by chance. The share of fatal crashes is corrected in the same way; the “as recorded” view shows it without correction.',
+  'Many crashes and serious crashes are two different things. The risk of dying per inhabitant depends on how many crashes there are, on what share of them end in a death and on how many people die in each fatal crash. A province can be risky because it has many crashes, because they are serious, or both.',
+  'The areas of 10 × 10 km (cells) cover the peninsula and the Balearic Islands, with Ceuta. A cell is “hot” when it and the eight cells around it have more fatal crashes than chance would explain: it is a zone, not a single spot. Each cell is assigned to the province that contains its middle. Canarias and Melilla have no cells, and Ceuta has two.',
+  'How the figure of a cell is worked out: the fatal crashes of 2022 to 2025 are divided by the kilometres of road in the cell and by the four years. If the cell has very little road, the result is moved towards the national average, because a couple of crashes would otherwise give a very high figure by chance. For example, a cell with 5 km of road and 3 fatal crashes would show 15 per 100 km as recorded, but its estimate is 2.2; the more road a cell has, the less it moves. Use “as recorded” to see the figure with no correction.',
+  'The cells use crashes outside towns whose position could be placed with the kilometre markers of the road (between 86% and 87% of those crashes in each year). Positions are approximate and crashes inside towns are not included. A white cell can have little road or no crash that could be placed, and the data cannot tell which. Figures are per kilometre of road, not per kilometre driven: a busy road piles up more crashes even if each vehicle runs less risk.',
+  'The nearby municipalities come from an open database built on INE and CNIG data, with the resident population of 1 January 2021. Distances go from the middle of the cell to the centre of the municipality, which in a big municipality can be far from the town. The 20 km figure adds up whole municipalities. Take both as a guide to the surroundings, not as a count of people who live next to the road.',
+  'To see where something is highest or lowest, use the button above the list: “Highest first” / “Lowest first”. In the provinces the number before each name is its place from the highest value, whatever the order shown. Two measures count crashes per inhabitant (provinces) and two count crashes per kilometre of road (areas): one is estimated, the other is as recorded. Crashes per kilometre is not the same as risk per kilometre driven, because the traffic on each road is not known.',
+  'Boxes: Canarias is drawn smaller; Ceuta and Melilla are drawn nine times bigger.'],
+ foot:'Sources: DGT crash records 2022–2025 (crashes with at least one casualty within 30 days); resident population from INE table 67988; province boundaries from IGN/CNIG, simplified; municipal names, positions and population from an open INE/CNIG-based database. The estimates come from the paper that accompanies this page and are not official statistics.'
+},
+es:{
+ kicker:'Accidentes registrados por la DGT, 2022–2025 · 50 provincias, Ceuta y Melilla',
+ h1:'Atlas provincial de siniestralidad',
+ lede:'¿Dónde mueren más personas en la carretera y por qué? Elige una medida en el mapa y pulsa hasta tres provincias para compararlas.',
+ howTitle:'Cómo leer esta página',
+ mapTitle:'Mapa', mapCap:'Canarias, Ceuta y Melilla en recuadros', viewLbl:'Vista', measLbl:'Medida',
+ hotToggle:'Mostrar celdas calientes (zonas de 10 × 10 km)',
+ viewProv:'Provincias', viewCell:'Zonas de 10 km',
+ cellLayers:{cebc:['Mortales por carretera (ajust.)','Por 100 km de carretera y año'],ckeb:['Accidentes por carretera (ajust.)','Todos los accidentes con víctimas, por 100 km'],ckraw:['Accidentes por carretera (obs.)','Observado, sin corregir'],cz:['Zonas calientes','Donde se acumulan los mortales'],cfat:['Accidentes mortales','Número en cada zona'],craw:['Mortales por carretera (obs.)','Observado, sin corregir'],cpop:['Gente cerca','Habitantes a menos de 20 km']},
+ cdesc:{
+  cebc:'Accidentes mortales por cada 100 km de carretera y año, 2022–2025. Es una estimación: donde una zona tiene muy poca carretera, la cifra se acerca a la media para que un solo accidente no distorsione el mapa. Cambia a «observado» para verla sin corregir.',
+  cz:'Indica si la zona y las ocho que la rodean tienen más accidentes mortales de los que explicaría el azar. Cuanto más rojo, más se acumulan. Las zonas que claramente están en esa situación llevan un contorno oscuro y se llaman celdas calientes.',
+  craw:'La misma cifra sin corregir: accidentes mortales divididos entre la carretera y entre los cuatro años, tal como salen de los datos. Donde una zona tiene muy poca carretera, un accidente más o menos la cambia mucho, así que el mapa es más irregular que el estimado. Compara los dos para ver qué zonas cambian.',
+  ckeb:'Accidentes con al menos una víctima por 100 km de carretera y año, 2022–2025: cuenta todos los accidentes, no solo los mortales, y muestra dónde son más frecuentes los accidentes de cualquier gravedad a lo largo de la carretera. Como la medida de mortales, es una estimación que se acerca a la media donde hay poca carretera. La longitud de carretera es la misma, pero no se conoce el tráfico, así que una vía muy transitada saldrá alta.',
+  ckraw:'La misma cifra sin corregir: accidentes con víctimas divididos entre la carretera y entre los cuatro años. Las zonas con muy poca carretera pueden llegar a valores extremos con un puñado de accidentes, así que léela junto con los kilómetros de vía de la lista.',
+  cfat:'Accidentes mortales cuya posición se ha podido situar dentro de cada zona durante 2022–2025.',
+  cpop:'Suma la gente que vive en los municipios cuyo centro está a menos de 20 km del medio de la zona (1 de enero de 2021). Se cuentan municipios enteros, así que da una idea aproximada de quién vive alrededor.'},
+ cvals:{ckeb:'Accidentes con víctimas por 100 km de carretera y año',ckraw:'Accidentes con víctimas por 100 km de carretera y año (observado)',craw:'Accidentes mortales por 100 km de carretera y año (observado)',cebc:'Accidentes mortales por 100 km de carretera y año',cz:'Concentración de accidentes mortales',cfat:'Accidentes mortales 2022–2025',cpop:'Habitantes a menos de 20 km'},
+ cLegRaw:(r,k)=>'Gris = la media de las zonas estudiadas ('+r+(k?' accidentes con víctimas':' accidentes mortales')+' por 100 km de carretera y año). Mismos colores, pero sin corregir: '+(k?'':'las zonas sin ningún accidente mortal son el azul más oscuro y ')+'las que tienen poca carretera y un par de accidentes pueden salir muy rojas.',
+ cLegRef:(r,k)=>'Gris = la media de las zonas estudiadas ('+r+(k?' accidentes con víctimas':' accidentes mortales')+' por 100 km de carretera y año). Rojo = más, azul = menos. Contorno oscuro: celda caliente.',
+ cLegZ:'Rojo = más accidentes mortales de lo habitual en la zona y su entorno, azul = menos. Contorno oscuro: celda caliente.',
+ zLo:'menos', zMid:'habitual', zHi:'más', zLvl:['muy alta','alta','normal','baja'], inh:'hab.',
+ cLegFat:m=>'Cuanto más rojo, más accidentes mortales (el color máximo se alcanza con '+m+' o más). Contorno oscuro: celda caliente.',
+ cLegPop:'Cuanto más rojo, más gente vive en los municipios cercanos (de 1 000 a 10 millones). Contorno oscuro: celda caliente.',
+ cTopT:(n,a,p)=>'Las '+n+' zonas '+(a?'más bajas':'más altas')+(p?' de '+p:''), rankT:a=>a?'Ranking, de menor a mayor':'Ranking', sortHi:'De mayor a menor', sortLo:'De menor a mayor', sortTip:'Invierte el orden de la lista', more:'Ver 100', less:'Ver 30', cAllProv:'Todas las provincias', cProvLbl:'Ver zonas de', cTopSub:'Ordenadas según la medida elegida. Pulsa una fila para ver la zona en el mapa. La provincia es la que contiene el medio de la zona y, debajo, aparece el municipio más cercano.',
+ cols:{prov:'Provincia',fatal:'Mortales',crashes:'Accidentes',km:'Km de vía',eb:'Por 100 km',raw:'Observado',m:{cebc:'Mortales por 100 km',craw:'Mortales por 100 km (obs.)',ckeb:'Accidentes por 100 km',ckraw:'Accidentes por 100 km (obs.)'}},
+ cHint:'Pulsa una zona del mapa o una fila de la lista para ver el detalle. En blanco = no analizada: tiene poca carretera o no se ha podido situar ningún accidente. Canarias y Melilla no tienen zonas; Ceuta tiene dos, en el Estrecho.',
+ cInfo:(c,prov,ex,ny)=>'<b>'+prov+'</b> · zona de 10 × 10 km (UTM 30N: x '+ex+', y '+ny+')<br>'+c,
+ cInfoBody:(o)=>o.fatal+' accidentes mortales de '+o.crashes+' con víctimas, en '+o.km+' km de carretera en cuatro años.<br>Observado: '+o.raw+' por 100 km y año. Estimado: '+o.eb+' (se acerca a la media cuando hay poca carretera).<br>Todos los accidentes con víctimas por 100 km y año: observado '+o.kraw+', estimado '+o.keb+'.<br>Celda caliente: <b>'+(o.hot?'sí':'no')+'</b>',
+ cTip:(o)=>o.fatal+' mortales · '+o.crashes+' accidentes · '+o.km+' km de carretera',
+ hotTip:'Celda caliente',
+ mapsLbl:'Verla en un mapa', gm:'Google Maps (satélite)', osm:'OpenStreetMap, zona delimitada', gj:'Contorno de la zona en un mapa (geojson.io)', nearLbl:'Municipios más cercanos', bigLbl:'El mayor a menos de 20 km', popLbl:'Habitantes a menos de 20 km', kmU:' km', nearTip:'Cerca de',
+ rankTitle:'Ranking',
+ rankSub:'La misma medida que el mapa, de mayor a menor. El punto es la estimación y la línea muestra cuánto podría variar. Si las líneas de dos provincias se solapan, no podemos asegurar cuál es mayor.',
+ between:'entre', and:'y',
+ cmpTitle:'Comparar provincias', addLabel:'Añadir una provincia', addPh:'Elegir…', clear:'Borrar selección',
+ cmpEmpty:'Pulsa provincias en el mapa, en el ranking o en el gráfico, o usa la lista. Una cuarta elección sustituye a la más antigua.',
+ scTitle:'¿Muchos accidentes o graves?',
+ popL:{rate:'Muertes por millón',R:'Riesgo de morir (ajust.)',cpi:'Accidentes por 1 000 hab. (obs.)',fat:'Proporción de mortales (ajust.)',tot:'Accidentes · mortales · muertes',hot:'Celdas calientes'},
+ popC:{area:'zona de 10 × 10 km',fc:'Mortales / con víctimas',km:'Carretera en la zona',f:'Mortales por 100 km·año (ajust.)',k:'Accidentes con víctimas por 100 km·año (ajust.)',obs:'obs.',hot:'Celda caliente',yes:'sí',no:'no'},
+ popFatal:'Proporción de mortales (ajust.)', popPlace:n=>'puesto '+n+' / 52', popIn:'En la comparación de abajo. Pulsa otra vez para quitarla.', popOut:'Añadida a la comparación de abajo.',
+ riTitle:'¿En qué puesto puede estar de verdad cada provincia?', riSub:'Puesto en el riesgo de morir ajustado entre las 52 unidades (1 = más muertes por habitante). El punto es la mejor estimación y la barra, los puestos plausibles; la zona sombreada son los diez más altos. A la derecha: puesto (rango) y probabilidad de estar entre los diez más altos.',
+ zOpen:'Ampliar', zClose:'Cerrar',
+ fnTitle:'¿Importa el tamaño?', fnSub:'Cada punto es una provincia: su población frente a las muertes por millón registradas. Las provincias pequeñas oscilan mucho solo por azar. Dentro de la banda sombreada (99,8 %) la diferencia con España podría ser casualidad; las líneas discontinuas marcan el 95 % y el 99,8 %. Los puntos rojos o azules quedan fuera.', fnX:'Población a 1 de enero de 2025 (escala logarítmica)', fnY:'Muertes por millón y año',
+ whyTitle:'¿Qué pesa en cada provincia?', whySub:'Para las provincias elegidas (pulsa en el mapa, el ranking o aquí): cuántas veces más o menos accidentes por habitante, cuánto más graves y cuántas muertes por accidente mortal, comparado con España. La última barra es el producto, el riesgo de morir.', whyRows:['Accidentes por habitante','Proporción de mortales','Muertes por mortal','Riesgo de morir'], whyEmpty:'Elige una provincia en el mapa o en el ranking para ver qué pesa en su riesgo.',
+ hotTitle:'Dónde se concentran las celdas calientes', hotSub:'Provincias con mayor proporción de celdas calientes entre sus celdas de 10 × 10 km analizadas (al menos 20 celdas). Junto a cada barra: proporción, celdas calientes y celdas analizadas. Pulsa una barra para añadir la provincia.',
+ scSub:'Cada punto es una provincia. Cuanto más a la derecha, más accidentes con víctimas por habitante que la media española; cuanto más arriba, más probable es que un accidente acabe en muerte. Las líneas grises muestran cuánto podría variar cada valor.',
+ scNote:'Se ve un patrón claro: las provincias con menos accidentes por habitante suelen tener accidentes más graves, y las que tienen más accidentes suelen tenerlos menos graves.',
+ spain:'España', avg:'nivel nacional',
+ layers:{
+  risk:['Muertes por millón','Lo registrado'],
+  R:['Riesgo de morir','Estimación ajustada'],
+  F:['Accidentes por habitante (ajust.)','Estimación ajustada'],
+  fraw:['Accidentes por habitante (obs.)','Observado, por 1 000 habitantes y año'],
+  L:['Gravedad','Estimación ajustada'],
+  share:['Proporción de mortales (ajust.)','Porcentaje corregido'],
+  shareRaw:['Proporción de mortales (obs.)','Observada, sin corregir']},
+ desc:{
+  risk:'Personas fallecidas a 30 días por cada millón de habitantes y año, 2022–2025. El gris significa algo parecido a España en conjunto.',
+  R:'Cuántas veces más (o menos) muertes por habitante que la media española. Es una estimación que también mira a las provincias vecinas, para que una provincia con pocos datos no sea la mejor o la peor solo por casualidad. 1 = igual que España.',
+  F:'Cuántas veces más (o menos) accidentes con víctimas por habitante que la media española. 1 = igual que España.',
+  fraw:'Accidentes con al menos una víctima por 1 000 habitantes y año, 2022–2025, tal como salen de los datos: accidentes divididos entre la población y entre los cuatro años. No hay corrección, así que las provincias pequeñas se mueven más por azar, y las que reciben muchos visitantes o tráfico de paso pueden salir altas sin que sus residentes corran más riesgo. Gris = España en conjunto.',
+  L:'Qué probabilidad tiene un accidente con víctimas de acabar en muerte comparada con la media española, sin contar con que las carreteras fuera de poblado son más graves que las calles. Un valor de 2 significa que es más o menos el doble de probable.',
+  share:'De cada 100 accidentes con víctimas, cuántos acaban en una muerte a 30 días. Las provincias con pocos datos se corrigen para que no engañen.',
+  shareRaw:'El mismo porcentaje tal como sale de los datos, sin corregir. Las provincias pequeñas como Ceuta, Melilla o Soria pueden parecer extremas solo porque tienen pocos accidentes; compáralo con la vista corregida.'},
+ vals:{risk:'Muertes por millón de habitantes y año',R:'Riesgo de morir (veces la media española)',F:'Accidentes por habitante (veces la media)',L:'Gravedad de los accidentes (veces la media)',share:'Accidentes mortales (% de los accidentes con víctimas)',shareRaw:'Accidentes mortales (% de los accidentes con víctimas), observado',fraw:'Accidentes con víctimas por 1 000 habitantes y año'},
+ legRef:r=>'Gris = '+r+' (la media española). Rojo = más, azul = menos.', legOut:'Contorno oscuro: la diferencia con España es clara y no parece cosa del azar.',
+ tipExcl:'Claramente distinta de España',
+ tipLine:(d,c)=>d+' muertes · '+c+' accidentes con víctimas',
+ sec:{tot:'Totales 2022–2025',risk:'Riesgo por habitante',drv:'Por qué: comparado con España',bym:'Estimaciones ajustadas',fat:'Accidentes mortales (% de los accidentes con víctimas)',hs:'Celdas calientes'},
+ row:{
+  pop:'Población, 1 ene 2025',crashes:'Accidentes con víctimas',fatal:'Accidentes mortales',deaths:'Muertes a 30 días',
+  rate:'Muertes por millón de habitantes y año',ratio:'Veces la media española',rank:'Puesto (1 = más muertes por habitante)',
+  cpi:'Accidentes con víctimas por 1 000 habitantes y año',cpiRank:'Puesto (1 = más accidentes por habitante)',
+  freq:'Accidentes por habitante',sev:'Proporción de accidentes mortales',mult:'Muertes por accidente mortal',prod:'Resultado: riesgo comparado con España',
+  L:'Gravedad',F:'Accidentes por habitante',R:'Riesgo de morir',
+  rawA:'Todas las vías (observado)',ebA:'Todas las vías (corregido)',ebI:'Solo vías fuera de poblado (corregido)',
+  hot:'Celdas calientes de 10 × 10 km'},
+ rk:(m,a,b)=>'puesto '+m+' (entre el '+a+' y el '+b+')', top10:t=>'prob. de estar en el top 10: '+t,
+ flagNote:'▲ ▼ = claramente por encima o por debajo de España. Entre paréntesis, el margen en el que probablemente está el valor real.',
+ how:[
+  'El color compara cada provincia con España: rojo significa más que la media, azul menos y gris algo parecido. Un contorno oscuro indica que la diferencia es clara y no parece cosa del azar.',
+  'Las provincias pequeñas tienen pocos accidentes, así que sus cifras bailan de un año a otro. Por eso cada punto del ranking lleva una línea: cuanto más larga, menos seguro es el valor. Si las líneas de dos provincias se solapan, no podemos decir cuál es mayor.',
+  'El riesgo se mide por habitante, no por kilómetro recorrido. Una provincia con mucho turismo o tráfico de paso para su población puede parecer más peligrosa de lo que es para quienes viven allí.',
+  'Las medidas «ajustadas» son estimaciones que tienen en cuenta también a las provincias vecinas y la media nacional. Así se evita que una provincia con pocos datos salga la mejor o la peor solo por casualidad. La proporción de mortales se corrige del mismo modo; la vista «observada» la muestra sin corregir.',
+  'Muchos accidentes y accidentes graves son cosas distintas. El riesgo de morir por habitante depende de cuántos accidentes hay, de qué proporción acaba en muerte y de cuántas personas mueren en cada accidente mortal. Una provincia puede ser arriesgada porque tiene muchos accidentes, porque son graves, o por ambas cosas.',
+  'Las zonas de 10 × 10 km (celdas) cubren la península y las islas Baleares, con Ceuta. Una celda es «caliente» cuando ella y las ocho que la rodean tienen más accidentes mortales de los que explicaría el azar: es una zona, no un punto suelto. Cada celda se asigna a la provincia que contiene su medio. Canarias y Melilla no tienen celdas, y Ceuta tiene dos.',
+  'Cómo se calcula la cifra de una celda: los accidentes mortales de 2022 a 2025 se dividen entre los kilómetros de carretera de la celda y entre los cuatro años. Si la celda tiene muy poca carretera, el resultado se acerca a la media nacional, porque un par de accidentes darían, por casualidad, una cifra muy alta. Por ejemplo, una celda con 5 km de carretera y 3 accidentes mortales mostraría 15 por 100 km observados, pero su estimación es 2,2; cuanta más carretera tiene una celda, menos se mueve. Usa «observado» para ver la cifra sin corregir.',
+  'Las celdas usan accidentes fuera de poblado cuya posición se ha podido situar con los puntos kilométricos de la carretera (entre el 86 % y el 87 % de esos accidentes cada año). Las posiciones son aproximadas y no se incluyen los accidentes dentro de poblado. Una celda en blanco puede tener poca carretera o ningún accidente que se haya podido situar, y los datos no permiten distinguirlo. Las cifras son por kilómetro de carretera, no por kilómetro recorrido: una carretera muy transitada acumula más accidentes aunque cada vehículo corra menos riesgo.',
+  'Los municipios cercanos salen de una base abierta construida con datos del INE y del CNIG, con la población residente a 1 de enero de 2021. Las distancias van del medio de la celda al centro del municipio, que en un municipio grande puede quedar lejos del pueblo. La cifra de 20 km suma municipios enteros. Tómalas como una guía del entorno, no como un recuento de la gente que vive junto a la carretera.',
+  'Para ver dónde es más alto o más bajo, usa el botón sobre la lista: «De mayor a menor» / «De menor a mayor». En las provincias, el número antes de cada nombre es su puesto desde el valor más alto, sea cual sea el orden mostrado. Dos medidas cuentan accidentes por habitante (provincias) y dos cuentan accidentes por kilómetro de carretera (zonas): una es estimada y la otra es observada. Accidentes por kilómetro no es lo mismo que riesgo por kilómetro recorrido, porque no se conoce el tráfico de cada vía.',
+  'Recuadros: Canarias se dibuja más pequeña; Ceuta y Melilla se dibujan nueve veces más grandes.'],
+ foot:'Fuentes: registros de accidentes de la DGT 2022–2025 (accidentes con al menos una víctima a 30 días); población residente de la tabla 67988 del INE; límites provinciales del IGN/CNIG, simplificados; nombres, posiciones y población municipales de una base abierta basada en INE/CNIG. Las estimaciones proceden del artículo que acompaña a esta página y no son estadísticas oficiales.'
+}};
+let lang=(navigator.language||'en').toLowerCase().startsWith('es')?'es':'en';
+const T=()=>TXT[lang];
+const nf=(v,d=0)=>v==null||!isFinite(v)?'—':v.toLocaleString(lang,{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=(v,d=1)=>v==null?'—':nf(v*100,d)+'%';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------------- layers ---------------- */
+const wil=(x,n)=>{const z=1.96,p=x/n,d=1+z*z/n,c=(p+z*z/(2*n))/d,h=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;return [c-h,c+h]};
+const poi=(x,z=1.96)=>{const lo=x>0?x*Math.pow(1-1/(9*x)-z/(3*Math.sqrt(x)),3):0, x1=x+1, hi=x1*Math.pow(1-1/(9*x1)+z/(3*Math.sqrt(x1)),3); return [Math.max(lo,0),hi]};
+const LAYERS={
+ risk:{get:p=>({v:p.rate,lo:p.rlo,hi:p.rhi}),ref:()=>D.nat.rate,d:1},
+ R:{get:p=>({v:p.R.rr,lo:p.R.lo,hi:p.R.hi}),ref:()=>1,d:2},
+ F:{get:p=>({v:p.F.rr,lo:p.F.lo,hi:p.F.hi}),ref:()=>1,d:2},
+ fraw:{get:p=>{const w=poi(p.crashes);return {v:p.crashes/p.py*1000,lo:w[0]/p.py*1000,hi:w[1]/p.py*1000}},ref:()=>D.nat.crashes/D.nat.py*1000,d:2},
+ L:{get:p=>({v:p.L.rr,lo:p.L.lo,hi:p.L.hi}),ref:()=>1,d:2},
+ share:{get:p=>({v:p.eb.eb*100,lo:p.eb.lo*100,hi:p.eb.hi*100}),ref:()=>D.nat.share*100,d:2},
+ shareRaw:{get:p=>{const w=wil(p.eb.x,p.eb.n);return {v:p.eb.x/p.eb.n*100,lo:w[0]*100,hi:w[1]*100}},ref:()=>D.nat.share*100,d:2}
+};
+const ORDER=['risk','R','F','fraw','L','share','shareRaw'];
+for(const k of ORDER){
+  const L=LAYERS[k]; L.ref0=L.ref();
+  L.vals={}; let m=0, dmin=0, dmax=0;
+  P.forEach(p=>{const g=L.get(p); L.vals[p.c]=g; const l=Math.log(g.v/L.ref0); m=Math.max(m,Math.abs(l)); dmin=Math.min(dmin,l); dmax=Math.max(dmax,l);});
+  L.lim=Math.ceil(m*20)/20; L.dmin=dmin; L.dmax=dmax;
+  L.sig=c=>{const g=L.vals[c]; return g.lo>L.ref0?1:(g.hi<L.ref0?-1:0)};
+}
+/* ---------------- 10 km cells ---------------- */
+const CELL=D.cl.map((r,i)=>({i,x:r[0],y:r[1],crashes:r[2],fatal:r[3],km:r[4],eb:r[5],raw:r[3]/(r[4]*4),z:r[6],pf:r[7],hot:r[8]===1,prov:r[9],cx:r[10],cy:r[11],n:D.cn[i]}));
+let sumF=0,sumE=0; CELL.forEach(c=>{sumF+=c.fatal;sumE+=c.km*4});
+const CREF=sumF/sumE*100;
+let sumY=0; CELL.forEach(c=>{sumY+=c.crashes});
+const KM=sumY/sumE, KREF=KM*100;                  // pooled crashes with casualties per 100 km of road per year
+/* gamma-Poisson prior for crashes per km: shape fitted by marginal likelihood, mean fixed at the pooled rate */
+function nbLL(a){const b=a/KM; let s=0; CELL.forEach(c=>{const E=c.km*4,y=c.crashes; for(let j=0;j<y;j++)s+=Math.log(a+j); s+=a*Math.log(b/(b+E))+y*Math.log(E/(b+E));}); return s;}
+let KA; {let lo=Math.log(.05),hi=Math.log(50),g=(Math.sqrt(5)-1)/2; for(let i=0;i<40;i++){const m1=hi-g*(hi-lo),m2=lo+g*(hi-lo); if(nbLL(Math.exp(m1))>nbLL(Math.exp(m2)))hi=m2; else lo=m1;} KA=Math.exp((lo+hi)/2);}
+CELL.forEach(c=>{c.kraw=c.crashes/(c.km*4); c.keb=(c.crashes+KA)/(c.km*4+KA/KM);});                       // pooled fatal crashes per 100 km of road per year
+const quant=(a,p)=>{const s=[...a].sort((x,y)=>x-y);return s[Math.min(s.length-1,Math.floor(p*s.length))]};
+const CLAY={
+  cebc:{lim:Math.ceil(quant(CELL.map(c=>Math.abs(Math.log(c.eb*100/CREF))),.99)*20)/20},
+  ckeb:{lim:Math.ceil(quant(CELL.map(c=>Math.abs(Math.log(c.keb*100/KREF))),.99)*20)/20},
+  cz:{lim:6},
+  craw:{},
+  ckraw:{},
+  cpop:{},
+  cfat:{vmax:Math.max(4,Math.ceil(quant(CELL.map(c=>c.fatal),.99)))}
+};
+const CORDER=['cebc','craw','ckeb','ckraw','cz','cfat','cpop'];
+const CM={cebc:c=>c.eb*100,craw:c=>c.raw*100,ckeb:c=>c.keb*100,ckraw:c=>c.kraw*100};   // per 100 km of road and year
+const isK=k=>k==='ckeb'||k==='ckraw', cref=k=>isK(k)?KREF:CREF, clim=k=>isK(k)?CLAY.ckeb.lim:CLAY.cebc.lim;
+const munName=j=>j<0?'—':D.mun[j][0], munPop=j=>j<0?0:D.mun[j][1];
+const popT=v=>Math.max(0,Math.min(1,(Math.log10(Math.max(v,1000))-3)/4));
+function cellColor(c){
+  const k=S.cl; let t,rgb;
+  if(k==='cfat'){t=Math.sqrt(Math.min(c.fatal,CLAY.cfat.vmax)/CLAY.cfat.vmax); rgb=mix(COL.mid,COL.hi,t);}
+  else if(k==='cpop'){rgb=mix(COL.mid,COL.hi,popT(c.n[6]));}
+  else{
+    t=CM[k]?Math.log(CM[k](c)/cref(k))/clim(k):c.z/CLAY.cz.lim; t=Math.max(-1,Math.min(1,t));
+    rgb=t<0?mix(COL.mid,COL.lo,-t):mix(COL.mid,COL.hi,t);
+  }
+  return 'rgb('+rgb.join(',')+')';
+}
+const zWord=z=>T().zLvl[z>=6?0:(z>=3?1:(z>-1.5?2:3))];
+const cellVal=c=>CM[S.cl]?nf(CM[S.cl](c),2):(S.cl==='cz'?zWord(c.z):(S.cl==='cpop'?nf(c.n[6]):nf(c.fatal)));
+const provName=c=>c.prov&&byC[c.prov]?byC[c.prov].n:'—';
+const fRank={}; [...P].sort((a,b)=>LAYERS.fraw.vals[b.c].v-LAYERS.fraw.vals[a.c].v).forEach((p,i)=>fRank[p.c]=i+1);
+const rateRank={}; [...P].sort((a,b)=>b.rate-a.rate).forEach((p,i)=>rateRank[p.c]=i+1);
+
+/* ---------------- state ---------------- */
+const S={cprov:0,layer:'R',sel:[],hot:false,hov:null,chov:null,view:'prov',cell:null,cl:'cebc',asc:false,topn:30,pop:null};
+const SLOT=['--s1','--s2','--s3'];
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function hex(c){c=c.replace('#','');if(c.length===3)c=c.split('').map(x=>x+x).join('');return[parseInt(c.slice(0,2),16),parseInt(c.slice(2,4),16),parseInt(c.slice(4,6),16)]}
+let COL;
+function loadColors(){COL={lo:hex(css('--dlo')),mid:hex(css('--dmid')),hi:hex(css('--dhi'))}}
+function mix(a,b,t){return a.map((x,i)=>Math.round(x+(b[i]-x)*t))}
+function colorOf(layer,c){
+  const L=LAYERS[layer], v=L.vals[c].v, t=Math.max(-1,Math.min(1,Math.log(v/L.ref0)/L.lim));
+  const rgb=t<0?mix(COL.mid,COL.lo,-t):mix(COL.mid,COL.hi,t); return 'rgb('+rgb.join(',')+')';
+}
+const slotColor=i=>css(SLOT[i]);
+const el=(n,a={},h)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(h!=null)e.innerHTML=h;return e};
+const $=id=>document.getElementById(id);
+const fmtV=(layer,v)=>nf(v,LAYERS[layer].d);
+const ciText=(layer,g)=>fmtV(layer,g.v)+' ('+T().between+' '+fmtV(layer,g.lo)+' '+T().and+' '+fmtV(layer,g.hi)+')';
+
+/* ---------------- layer controls & legend ---------------- */
+function renderLayers(){
+  const cellv=S.view==='cell', keys=cellv?CORDER:ORDER, cur=cellv?S.cl:S.layer, box=$('layers'); box.innerHTML=''; box.dataset.n=keys.length;
+  keys.forEach(k=>{
+    const lab=cellv?T().cellLayers[k]:T().layers[k];
+    const b=document.createElement('button'); b.type='button'; b.setAttribute('role','radio'); b.setAttribute('aria-checked',String(cur===k));
+    b.title=lab[1]; b.innerHTML='<b>'+esc(lab[0])+'</b>';
+    b.onclick=()=>{ if(cellv)S.cl=k; else S.layer=k; update(); }; box.appendChild(b);
+  });
+  const ll=cellv?T().cellLayers[S.cl]:T().layers[S.layer]; $('layerdesc').textContent=ll[1]+'. '+(cellv?T().cdesc[S.cl]:T().desc[S.layer]);
+}
+function renderViewSeg(){
+  $('v-prov').textContent=T().viewProv; $('v-cell').textContent=T().viewCell;
+  $('v-prov').setAttribute('aria-pressed',String(S.view==='prov')); $('v-cell').setAttribute('aria-pressed',String(S.view==='cell'));
+}
+function renderLegend(){
+  const cellv=S.view==='cell', ticks=$('ticks'); ticks.innerHTML='';
+  const div='linear-gradient(90deg,rgb('+COL.lo.join(',')+'),rgb('+COL.mid.join(',')+'),rgb('+COL.hi.join(',')+'))';
+  const seq='linear-gradient(90deg,rgb('+COL.mid.join(',')+'),rgb('+COL.hi.join(',')+'))';
+  const add=(x,txt)=>{const sp=document.createElement('span'); sp.style.left=(x*100)+'%'; sp.textContent=txt; ticks.appendChild(sp);};
+  if(!cellv){
+    const L=LAYERS[S.layer]; $('ramp').style.background=div;
+    [0.125,0.25,0.5,1,2,4,8].forEach(r=>{const x=(Math.log(r)/L.lim+1)/2; if(x>=-0.001&&x<=1.001)add(x,nf(L.ref0*r,L.d));});
+    $('legnote').textContent=T().legRef(nf(L.ref0,L.d))+' '+T().legOut; $('hotlbl').style.display=''; return;
+  }
+  $('hotlbl').style.display='none';
+  if(CM[S.cl]){
+    const lim=clim(S.cl), ref=cref(S.cl), raw=S.cl==='craw'||S.cl==='ckraw'; $('ramp').style.background=div;
+    [0.125,0.25,0.5,1,2,4,8].forEach(r=>{const x=(Math.log(r)/lim+1)/2; if(x>=-0.001&&x<=1.001){const v=ref*r; add(x,nf(v,v>=10?0:(v>=2?1:2)));}});
+    $('legnote').textContent=raw?T().cLegRaw(nf(ref,2),isK(S.cl)):T().cLegRef(nf(ref,2),isK(S.cl));
+  }else if(S.cl==='cz'){
+    $('ramp').style.background=div; [[0.04,T().zLo],[0.5,T().zMid],[0.96,T().zHi]].forEach(a=>add(a[0],a[1])); $('legnote').textContent=T().cLegZ;
+  }else if(S.cl==='cpop'){
+    $('ramp').style.background=seq; [[1e3,'1k'],[1e4,'10k'],[1e5,'100k'],[1e6,'1M'],[1e7,'10M']].forEach(a=>add(popT(a[0]),a[1])); $('legnote').textContent=T().cLegPop;
+  }else{
+    const m=CLAY.cfat.vmax; $('ramp').style.background=seq;
+    [0,1,2,4,8,16].filter(v=>v<m).forEach(v=>add(Math.sqrt(v/m),nf(v))); add(1,'≥'+nf(m)); $('legnote').textContent=T().cLegFat(nf(m));
+  }
+}
+
+/* ---------------- map ---------------- */
+let mapBuilt=false;
+function buildMap(){
+  const svg=$('map'); svg.setAttribute('viewBox','0 0 '+D.vb[0]+' '+D.vb[1]); svg.innerHTML='';
+  const sbx=D.vb[0]-D.marg-100, sby=D.mh+34;
+  svg.appendChild(el('path',{class:'sb',d:'M'+sbx+' '+(sby-8)+'v8h100v-8M'+(sbx+50)+' '+(sby-4)+'v4'}));
+  svg.appendChild(el('text',{class:'sbt',x:sbx,y:sby+18},'0'));
+  svg.appendChild(el('text',{class:'sbt','text-anchor':'end',x:sbx+100,y:sby+18},'100 km'));
+  const gProv=el('g',{id:'gprov'}); svg.appendChild(gProv); const gCell=el('g',{id:'gcell'}); svg.appendChild(gCell); const gBord=el('g',{id:'gbord'}); svg.appendChild(gBord);
+  D.frames.forEach(f=>{
+    svg.appendChild(el('rect',{class:'frame',x:f.x,y:f.y,width:f.w,height:f.h,rx:22}));
+    svg.appendChild(el('text',{class:'flabel',x:f.x+4,y:f.y+f.h+22},esc(lang==='es'?f.label.replace('(reduced)','(reducido)'):f.label)));
+  });
+  const gHot=el('g',{id:'ghot'}); svg.appendChild(gHot);
+  svg.appendChild(el('g',{id:'gsig'})); svg.appendChild(el('g',{id:'gsel'})); const gChot=el('g',{id:'gchot'}); svg.appendChild(gChot); svg.appendChild(el('g',{id:'gcsel'})); svg.appendChild(el('g',{id:'ghov'}));
+  Object.keys(D.paths).forEach(k=>{
+    const c=+k, p=byC[c];
+    const e=el('path',{class:'prov','data-c':c,d:D.paths[k],tabindex:0,role:'button'});
+    gProv.appendChild(e);
+  });
+  CELL.forEach(c=>{
+    gCell.appendChild(el('rect',{class:'cell','data-i':c.i,x:c.x,y:c.y,width:10.15,height:10.15}));
+    if(c.hot)gHot.appendChild(el('rect',{class:'hotc',x:c.x,y:c.y,width:10,height:10}));
+  });
+  /* outline only the outer edge of each cluster of hot cells */
+  const hk=new Set(CELL.filter(c=>c.hot).map(c=>c.cx+','+c.cy)); let pd='';
+  CELL.filter(c=>c.hot).forEach(c=>{
+    const x=c.x,y=c.y;
+    if(!hk.has(c.cx+','+(c.cy+1)))pd+='M'+x+' '+y+'h10';
+    if(!hk.has(c.cx+','+(c.cy-1)))pd+='M'+x+' '+(y+10)+'h10';
+    if(!hk.has((c.cx-1)+','+c.cy))pd+='M'+x+' '+y+'v10';
+    if(!hk.has((c.cx+1)+','+c.cy))pd+='M'+(x+10)+' '+y+'v10';
+  });
+  gChot.appendChild(el('path',{class:'ol hot',d:pd}));
+  Object.keys(D.paths).forEach(k=>gBord.appendChild(el('path',{class:'bord',d:D.paths[k]})));
+  svg.addEventListener('click',e=>{const ci=e.target.closest('[data-i]'); if(ci){selectCell(+ci.dataset.i);return;} const t=e.target.closest('[data-c]'); if(t){mapProv(+t.dataset.c);return;} if(S.pop!=null||S.cell!=null){S.pop=null;S.cell=null;update();}});
+  svg.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset&&e.target.dataset.c){e.preventDefault();mapProv(+e.target.dataset.c)}});
+  svg.addEventListener('mouseover',e=>{const ci=e.target.closest('[data-i]'); if(ci){setCellHover(+ci.dataset.i,e);return;} const t=e.target.closest('[data-c]'); setHover(t?+t.dataset.c:null,e)});
+  svg.addEventListener('mousemove',e=>{if(S.hov!=null||S.chov!=null)moveTip(e)});
+  svg.addEventListener('mouseleave',()=>{setHover(null);setCellHover(null)});
+  svg.addEventListener('focusin',e=>{const t=e.target.closest&&e.target.closest('[data-c]'); if(t)setHover(+t.dataset.c,null,t)});
+  svg.addEventListener('focusout',()=>setHover(null));
+  mapBuilt=true;
+}
+let vbAnim=0;
+function provBox(c){
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  CELL.forEach(q=>{if(q.prov===c){x0=Math.min(x0,q.x);y0=Math.min(y0,q.y);x1=Math.max(x1,q.x+10);y1=Math.max(y1,q.y+10);}});
+  const e=document.querySelector('#gprov .prov[data-c="'+c+'"]');
+  try{ const b=e.getBBox();   /* the outline can sit in an enlarged inset far from the cells (Ceuta): then use the cells only */
+    const inFrame=D.frames.some(f=>b.x>=f.x-2&&b.x+b.width<=f.x+f.w+2&&b.y>=f.y-2&&b.y+b.height<=f.y+f.h+2);
+    if(b.width>0&&(x1<0||!inFrame)){x0=Math.min(x0,b.x);y0=Math.min(y0,b.y);x1=Math.max(x1,b.x+b.width);y1=Math.max(y1,b.y+b.height);} }catch(_){}
+  let w=x1-x0,h=y1-y0; const cx=(x0+x1)/2, cy=(y0+y1)/2;
+  w=Math.max(w*1.14,110); h=Math.max(h*1.14,110);
+  const ar=D.vb[0]/D.vb[1]; if(w/h<ar)w=h*ar; else h=w/ar;
+  return [cx-w/2,cy-h/2,w,h];
+}
+function setVB(to){
+  const svg=$('map'), from=S.vb||[0,0,D.vb[0],D.vb[1]];
+  if(from.every((v,i)=>Math.abs(v-to[i])<0.01))return;
+  cancelAnimationFrame(vbAnim); S.vb=to;
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){svg.setAttribute('viewBox',to.join(' '));return;}
+  const t0=performance.now(), dur=520, ez=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
+  const step=now=>{const u=Math.min(1,(now-t0)/dur), k=ez(u); svg.setAttribute('viewBox',from.map((v,i)=>v+(to[i]-v)*k).join(' ')); posPop(); if(u<1)vbAnim=requestAnimationFrame(step);};
+  vbAnim=requestAnimationFrame(step);
+}
+function renderMap(){
+  if(!mapBuilt)buildMap();
+  const cellv=S.view==='cell', svg=$('map'), L=LAYERS[S.layer], g=$('gprov');
+  svg.classList.toggle('cellview',cellv);
+  const sh=(id,on)=>{$(id).style.display=on?'':'none'};
+  sh('gcell',cellv); sh('gbord',cellv); sh('gchot',cellv); sh('gcsel',cellv); sh('gsig',!cellv); sh('gsel',!cellv); sh('ghot',!cellv&&S.hot);
+  g.querySelectorAll('.prov').forEach(e=>e.setAttribute('tabindex',cellv?'-1':'0'));
+  if(cellv){
+    svg.querySelectorAll('#gcell .cell').forEach(e=>{const q=CELL[+e.dataset.i]; e.style.fill=cellColor(q); e.classList.toggle('dim',!!S.cprov&&q.prov!==S.cprov);});
+    setVB(S.cprov&&byC[S.cprov]?provBox(S.cprov):[0,0,D.vb[0],D.vb[1]]);
+    const gs=$('gcsel'); gs.innerHTML='';
+    if(S.cell!=null){
+      const c=CELL[S.cell];
+      gs.appendChild(el('rect',{class:'ol halo',x:c.x-1,y:c.y-1,width:12,height:12}));
+      const q=el('rect',{class:'ol sel',x:c.x-1,y:c.y-1,width:12,height:12}); q.style.stroke=css('--s1'); gs.appendChild(q);
+    }
+    return;
+  }
+  setVB([0,0,D.vb[0],D.vb[1]]);
+  g.querySelectorAll('.prov').forEach(e=>{
+    const c=+e.dataset.c, p=byC[c];
+    e.style.fill=colorOf(S.layer,c);
+    e.setAttribute('aria-label',p.n+': '+ciText(S.layer,L.vals[c]));
+  });
+  const sig=$('gsig'); sig.innerHTML='';
+  P.forEach(p=>{ if(L.sig(p.c)) sig.appendChild(el('path',{class:'ol sig',d:D.paths[p.c]})); });
+  const sel=$('gsel'); sel.innerHTML='';
+  S.sel.forEach((c,i)=>{
+    sel.appendChild(el('path',{class:'ol halo',d:D.paths[c]}));
+    const q=el('path',{class:'ol sel',d:D.paths[c]}); q.style.stroke=slotColor(i); sel.appendChild(q);
+  });
+}
+function mapProv(c){const was=S.sel.indexOf(c)>=0; if(was&&S.pop!==c){S.pop=c;update();return;} S.pop=was?null:c; toggle(c);}
+function selectCell(i){S.cell=S.cell===i?null:i; update();}
+function setCellHover(i,ev){
+  if(S.chov===i&&i!=null){if(ev)moveTip(ev);return;}
+  S.hov=null; S.chov=i; const gh=$('ghov'); gh.innerHTML='';
+  if(i==null){tip.style.display='none';return;}
+  const c=CELL[i], t=T(); gh.appendChild(el('rect',{class:'ol hov',x:c.x,y:c.y,width:10,height:10}));
+  tip.innerHTML='<b>'+esc(provName(c))+'</b><span>'+esc(t.nearTip)+' '+esc(munName(c.n[0]))+' ('+nf(munPop(c.n[0]))+' '+esc(t.inh)+')</span><span>'+esc(t.cvals[S.cl])+': '+esc(cellVal(c))+'</span><span>'+esc(t.cTip({fatal:nf(c.fatal),crashes:nf(c.crashes),km:nf(c.km)}))+'</span>'+(c.hot?'<span>● '+esc(t.hotTip)+'</span>':'');
+  tip.style.display='block'; if(ev)moveTip(ev);
+}
+const WIDE=()=>window.innerWidth>860;
+function renderCellInfo(){
+  const d=$('cellinfo'), pl=document.querySelector('.pl');
+  const hasC=S.view==='cell'&&S.cell!=null, hasP=S.view==='prov'&&S.pop!=null&&byC[S.pop];
+  if(S.view!=='cell'&&!hasP){d.hidden=true;d.dataset.k='';d.classList.remove('full');pl.classList.remove('hascell');return;}
+  d.hidden=false;
+  if((hasC||hasP)&&WIDE()){
+    const key=(hasC?'c'+S.cell:'p'+S.pop+':'+S.sel.join(','))+':'+lang; d.classList.add('full'); pl.classList.add('hascell');
+    if(d.dataset.k!==key){d.innerHTML='<button type="button" class="pclose" aria-label="'+esc(T().zClose)+'">✕</button><div>'+(hasC?cellPopHtml(CELL[S.cell]):provPopHtml(byC[S.pop]))+'</div>'; d.dataset.k=key; d.querySelector('.pclose').onclick=()=>{S.pop=null;S.cell=null;update();};}
+  } else { d.classList.remove('full'); pl.classList.remove('hascell'); d.dataset.k=''; if(S.view==='cell')d.textContent=T().cHint; else d.hidden=true; }
+}
+function provMiniHtml(p){const t=T(); return '<span class="mn">'+esc(p.n)+'</span><span class="mv">'+nf(p.pop25)+' '+esc(t.inh)+'</span>';}
+function cellMiniHtml(c){
+  const t=T(); return '<span class="mn">'+esc(munName(c.n[0]))+'</span><span class="mv">'+esc(t.cvals[S.cl])+': '+esc(cellVal(c))+'</span>';
+}
+/* ---------------- card over the map ---------------- */
+function popAnchor(){
+  if(S.view==='cell'&&S.cell!=null)return $('map').querySelector('#gcsel rect.sel');
+  if(S.view==='prov'&&S.pop!=null&&byC[S.pop])return $('map').querySelector('.prov[data-c="'+S.pop+'"]');
+  return null;
+}
+function popRow(l,v,sm){return '<div class="pr2"><span>'+esc(l)+'</span><span>'+v+(sm?'<small>'+sm+'</small>':'')+'</span></div>';}
+function provPopHtml(p){
+  const t=T(), q=t.popL, n=D.nat, si=S.sel.indexOf(p.c), f=LAYERS.fraw.vals[p.c];
+  const rg=(a,b,d)=>' ('+nf(a,d)+'–'+nf(b,d)+')';
+  let h='<div class="ph">'+(si>=0?'<span class="dot" style="background:'+slotColor(si)+'"></span>':'')+'<span>'+esc(p.n)+'</span><small>'+nf(p.pop25)+' '+esc(t.inh)+'</small></div>';
+  h+=popRow(q.rate,flag(p.rlo,p.rhi,n.rate)+nf(p.rate,1)+'<small>'+rg(p.rlo,p.rhi,1)+' · '+esc(t.popPlace(nf(rateRank[p.c])))+'</small>');
+  h+=popRow(q.R,flag(p.R.lo,p.R.hi,1)+nf(p.R.rr,2)+'<small>'+rg(p.R.lo,p.R.hi,2)+' · '+esc(t.popPlace(nf(p.R.rk)))+'</small>');
+  h+=popRow(q.cpi,flag(f.lo,f.hi,LAYERS.fraw.ref0)+nf(f.v,2)+'<small>'+rg(f.lo,f.hi,2)+' · '+esc(t.popPlace(nf(fRank[p.c])))+'</small>');
+  h+=popRow(q.fat,flag(p.eb.lo,p.eb.hi,n.share)+pct(p.eb.eb,2)+'<small>'+rg(p.eb.lo*100,p.eb.hi*100,2)+' %</small>');
+  h+=popRow(q.tot,nf(p.crashes)+' · '+nf(p.fatal)+' · '+nf(p.deaths));
+  if(p.cells)h+=popRow(q.hot,nf(p.hot)+' / '+nf(p.cells));
+  h+='<div class="pn">'+esc(si>=0?t.popIn:t.popOut)+'</div>';
+  return h;
+}
+function cellPopHtml(c){
+  const t=T(), q=t.popC, E=c.km*4;
+  let h='<div class="ph"><span>'+esc(provName(c).split('/')[0])+'</span><small>'+esc(q.area)+'</small></div><div class="pn" style="margin:-3px 0 6px">UTM 30N: x '+nf(c.cx*10)+'–'+nf(c.cx*10+10)+', y '+nf(c.cy*10)+'–'+nf(c.cy*10+10)+'</div>';
+  h+=popRow(q.fc,nf(c.fatal)+' / '+nf(c.crashes))+popRow(q.km,nf(c.km)+' km');
+  h+=popRow(q.f,nf(c.eb*100,2)+'<small>'+esc(q.obs)+' '+nf(c.fatal/E*100,2)+'</small>');
+  h+=popRow(q.k,nf(c.keb*100,1)+'<small>'+esc(q.obs)+' '+nf(c.kraw*100,1)+'</small>');
+  h+=popRow(q.hot,c.hot?'<b>'+esc(q.yes)+'</b>':esc(q.no));
+  return h+nearHtml(c);
+}
+function renderPop(){
+  const d=$('pop'), a=popAnchor();
+  if(!a){d.hidden=true;return;}
+  const mini=WIDE();
+  const html=S.view==='cell'?(mini?cellMiniHtml(CELL[S.cell]):cellPopHtml(CELL[S.cell])):(mini?provMiniHtml(byC[S.pop]):provPopHtml(byC[S.pop]));
+  const key=S.view+':'+(S.view==='cell'?S.cell:S.pop)+':'+lang+':'+S.sel.join(',')+':'+(mini?'m':'f')+':'+(mini?S.cl:'');
+  d.classList.toggle('mini',mini);
+  if(d.dataset.k!==key){d.innerHTML='<button type="button" class="pclose" aria-label="'+esc(T().zClose)+'">✕</button><div>'+html+'</div>'; d.dataset.k=key; d.hidden=false; d.style.animation='none'; void d.offsetWidth; d.style.animation='';
+    d.querySelector('.pclose').onclick=()=>{S.pop=null;S.cell=null;update();};}
+  d.hidden=false; posPop();
+}
+function posPop(){
+  const d=$('pop'); if(d.hidden)return; const a=popAnchor(); if(!a){d.hidden=true;return;}
+  const W=window.innerWidth; d.classList.toggle('sheet',W<=640); if(W<=640)return;
+  const st=document.querySelector('.stage').getBoundingClientRect(), r=a.getBoundingClientRect(), w=d.offsetWidth, h=d.offsetHeight;
+  const minX=st.left+(W>860?316:8), maxX=st.right-(W>1260?408:8)-w;
+  let x=r.left+r.width/2-w/2; x=Math.max(minX,Math.min(x,Math.max(minX,maxX)));
+  let y=r.top-h-12; if(y<st.top+8)y=r.bottom+12; if(y+h>st.bottom-8)y=Math.max(st.top+8,st.bottom-h-8);
+  d.style.left=(x-st.left)+'px'; d.style.top=(y-st.top)+'px';
+}
+window.addEventListener('resize',()=>{posPop();});
+/* ETRS89 / UTM 30N (EPSG:25830) to WGS84 longitude and latitude, Krüger series */
+function utm2ll(E,N){
+  const a=6378137,f=1/298.257222101,k0=.9996,n=f/(2-f),A=a/(1+n)*(1+n*n/4+n**4/64);
+  const x=(E-500000)/(k0*A), y=N/(k0*A);
+  const b=[n/2-2*n*n/3+37*n**3/96-n**4/360, n*n/48+n**3/15-437*n**4/1440, 17*n**3/480-37*n**4/840, 4397*n**4/161280];
+  let xi=y, et=x; b.forEach((bj,j)=>{const k=2*(j+1); xi-=bj*Math.sin(k*y)*Math.cosh(k*x); et-=bj*Math.cos(k*y)*Math.sinh(k*x);});
+  const chi=Math.asin(Math.sin(xi)/Math.cosh(et));
+  const d=[2*n-2*n*n/3-2*n**3+116*n**4/45, 7*n*n/3-8*n**3/5-227*n**4/45, 56*n**3/15-136*n**4/35, 4279*n**4/630];
+  let lat=chi; d.forEach((dj,j)=>{lat+=dj*Math.sin(2*(j+1)*chi);});
+  const lon=-3*Math.PI/180+Math.atan(Math.sinh(et)/Math.cos(xi));
+  return [lon*180/Math.PI,lat*180/Math.PI];
+}
+function mapLinks(c){
+  const t=T(), x0=c.cx*10000, y0=c.cy*10000, sw=utm2ll(x0,y0), ne=utm2ll(x0+10000,y0+10000), ce=utm2ll(x0+5000,y0+5000), nw=utm2ll(x0,y0+10000), se=utm2ll(x0+10000,y0);
+  const f=v=>v.toFixed(5);
+  const gm='https://www.google.com/maps/@?api=1&map_action=map&center='+f(ce[1])+','+f(ce[0])+'&zoom=12&basemap=satellite';
+  const osm='https://www.openstreetmap.org/?minlon='+f(sw[0])+'&minlat='+f(sw[1])+'&maxlon='+f(ne[0])+'&maxlat='+f(ne[1])+'&box=yes';
+  const gj={type:'Feature',properties:{},geometry:{type:'Polygon',coordinates:[[sw,se,ne,nw,sw].map(p=>[+f(p[0]),+f(p[1])])]}};
+  const gjs='https://geojson.io/#data=data:application/json,'+encodeURIComponent(JSON.stringify(gj));
+  const a=(h,l)=>'<a href="'+h+'" target="_blank" rel="noopener noreferrer">'+esc(l)+' ↗</a>';
+  return '<div class="near"><div class="nh">'+esc(t.mapsLbl)+' · '+f(ce[1])+', '+f(ce[0])+'</div><span class="nm1 lk">'+a(gm,t.gm)+a(osm,t.osm)+a(gjs,t.gj)+'</span></div>';
+}
+function nearHtml(c){
+  const t=T(), n=c.n, one=(j,dk)=>j<0?'':'<span class="nm1">'+esc(munName(j))+' <small>'+nf(munPop(j))+' · '+nf(dk,1)+t.kmU+'</small></span>';
+  let h='<div class="near"><div class="nh">'+esc(t.nearLbl)+'</div>'+one(n[0],n[1])+one(n[2],n[3])+one(n[4],n[5])+'</div>';
+  if(n[7]>=0) h+='<div class="near"><div class="nh">'+esc(t.bigLbl)+'</div>'+one(n[7],n[8])+'</div>';
+  h+='<div class="near"><div class="nh">'+esc(t.popLbl)+'</div><span class="nm1"><b>'+nf(n[6])+'</b></span></div>';
+  return mapLinks(c)+h;
+}
+function renderRankPanel(){
+  const cellv=S.view==='cell';
+  $('h-rank').textContent=cellv?T().cTopT(S.topn,S.asc,S.cprov&&byC[S.cprov]?byC[S.cprov].n:''):T().rankT(S.asc); $('cprovbar').hidden=!cellv;
+  $('sortdir').textContent=S.asc?'↑ '+T().sortLo:'↓ '+T().sortHi; $('sortdir').setAttribute('aria-pressed',String(S.asc)); $('sortdir').title=T().sortTip;
+  $('more').hidden=!cellv; $('more').textContent=S.topn>30?T().less:T().more; $('more').setAttribute('aria-pressed',String(S.topn>30));
+  $('rankbar').style.display=''; if(cellv)fillCprov(); $('ranksub').textContent=cellv?T().cTopSub:T().rankSub;
+  $('rank').style.display=cellv?'none':''; $('celltop').hidden=!cellv;
+  if(cellv)renderCellTop(); else renderRank();
+}
+function fillCprov(){
+  const sel=$('cprov'), t=T(), cnt={}; CELL.forEach(c=>{cnt[c.prov]=(cnt[c.prov]||0)+1});
+  const ps=Object.keys(cnt).map(Number).filter(c=>byC[c]).sort((a,b)=>byC[a].n.localeCompare(byC[b].n,'es'));
+  sel.innerHTML='<option value="0">'+esc(t.cAllProv)+'</option>'+ps.map(c=>'<option value="'+c+'">'+esc(byC[c].n)+' ('+cnt[c]+')</option>').join('');
+  sel.value=String(S.cprov); $('cprovlbl').textContent=t.cProvLbl;
+}
+function renderCellTop(){
+  const k=S.cl, t=T(), dir=S.asc?-1:1;
+  const key=c=>CM[k]?CM[k](c)+c.fatal*1e-7:(k==='cz'?c.z:(k==='cpop'?c.n[6]+c.eb:c.fatal+c.eb*1e-3));
+  const pool=S.cprov?CELL.filter(c=>c.prov===S.cprov):CELL;
+  const list=[...pool].sort((a,b)=>dir*(key(b)-key(a))||(S.asc?b.km-a.km:0)).slice(0,S.topn);
+  const mh=t.cols.m[k]||t.cols.eb, hl=c=>CM[k]?'':'';
+  let h='<table class="top"><thead><tr><th>#</th><th>'+esc(t.cols.prov)+'</th><th>'+esc(t.cols.fatal)+'</th><th>'+esc(t.cols.crashes)+'</th><th>'+esc(t.cols.km)+'</th><th>'+esc(mh)+'</th></tr></thead><tbody>';
+  list.forEach((c,n)=>{
+    h+='<tr data-i="'+c.i+'"'+(S.cell===c.i?' class="sel"':'')+'><td>'+(n+1)+'</td><td>'+esc(provName(c).split('/')[0])+(c.hot?' <i class="up">●</i>':'')+'<small>'+esc(munName(c.n[0]))+'</small></td><td>'+nf(c.fatal)+'</td><td>'+nf(c.crashes)+'</td><td>'+nf(c.km)+'</td><td>'+(CM[k]?'<b>'+nf(CM[k](c),2)+'</b>':nf(c.eb*100,2))+'</td></tr>';
+  });
+  $('celltop').innerHTML=h+'</tbody></table>';
+}
+
+/* ---------------- ranking ---------------- */
+const RK={w:390,x0:136,x1:340,top:24,rh:12.4,bot:6};
+function renderRank(){
+  const L=LAYERS[S.layer], svg=$('rank');
+  const desc=[...P].sort((a,b)=>L.vals[b.c].v-L.vals[a.c].v), place={}; desc.forEach((p,i)=>place[p.c]=i+1);
+  const order=S.asc?[...desc].reverse():desc;
+  const H=RK.top+order.length*RK.rh+RK.bot;
+  svg.setAttribute('viewBox','0 0 '+RK.w+' '+H); svg.innerHTML='';
+  const dlo=Math.min(L.dmin*1.2,-0.35), dhi=Math.max(L.dmax*1.2,0.35);
+  const X=l=>RK.x0+(Math.min(Math.max(l,dlo),dhi)-dlo)/(dhi-dlo)*(RK.x1-RK.x0);
+  let lastX=-1e9;
+  [0.125,0.25,0.5,0.7,1,1.5,2,4,8].forEach(r=>{
+    const l=Math.log(r); if(l<dlo||l>dhi)return;
+    svg.appendChild(el('line',{class:r===1?'refl':'grid-l',x1:X(l),x2:X(l),y1:RK.top-6,y2:H-RK.bot}));
+    if(X(l)-lastX>=30||r===1){ svg.appendChild(el('text',{class:'ax','text-anchor':'middle',x:X(l),y:RK.top-10},nf(L.ref0*r,L.d))); lastX=X(l); }
+  });
+  const gRows=el('g'); svg.appendChild(gRows);
+  order.forEach((p,i)=>{
+    const g=L.vals[p.c], y=RK.top+i*RK.rh+RK.rh/2, si=S.sel.indexOf(p.c);
+    const row=el('g',{class:'row'+(si>=0?' sel':''),'data-c':p.c,tabindex:0,role:'button','aria-label':p.n+': '+ciText(S.layer,g)});
+    row.appendChild(el('rect',{class:'hit',x:0,y:y-RK.rh/2,width:RK.w,height:RK.rh}));
+    row.appendChild(el('text',{class:'pl','text-anchor':'end',x:14,y:y+3.4},String(place[p.c])));
+    if(si>=0){row.appendChild(el('circle',{cx:21,cy:y,r:3.6,fill:slotColor(si)}));}
+    const nm=p.n.length>20?p.n.slice(0,19)+'…':p.n;
+    row.appendChild(el('text',{class:'lbl',x:29,y:y+3.4},esc(nm)));
+    row.appendChild(el('text',{class:'vl','text-anchor':'end',x:RK.w,y:y+3.4},fmtV(S.layer,g.v)));
+    const lo=Math.log(g.lo/L.ref0), hi=Math.log(g.hi/L.ref0), v=Math.log(g.v/L.ref0);
+    row.appendChild(el('line',{class:'wh',x1:X(lo),x2:X(hi),y1:y,y2:y}));
+    if(lo<dlo)row.appendChild(el('path',{class:'tipc',d:'M'+(RK.x0)+' '+y+'l4 -2.6v5.2z'}));
+    if(hi>dhi)row.appendChild(el('path',{class:'tipc',d:'M'+(RK.x1)+' '+y+'l-4 -2.6v5.2z'}));
+    const dot=el('circle',{cx:X(v),cy:y,r:3.3,stroke:L.sig(p.c)?css('--ink'):css('--edge'),'stroke-width':L.sig(p.c)?1.4:.8}); dot.style.fill=colorOf(S.layer,p.c);
+    row.appendChild(dot); gRows.appendChild(row);
+  });
+  svg.onclick=e=>{const t=e.target.closest('[data-c]'); if(t)toggle(+t.dataset.c)};
+  svg.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset&&e.target.dataset.c){e.preventDefault();toggle(+e.target.dataset.c)}};
+  svg.onmouseover=e=>{const t=e.target.closest('[data-c]'); setHover(t?+t.dataset.c:null,e)};
+  svg.onmousemove=e=>{if(S.hov!=null)moveTip(e)};
+  svg.onmouseleave=()=>setHover(null);
+}
+
+/* ---------------- scatter ---------------- */
+const SC={w:520,h:440,l:46,r:14,t:12,b:44};
+function renderScatter(){
+  const svg=$('sc'); svg.setAttribute('viewBox','0 0 '+SC.w+' '+SC.h); svg.innerHTML='';
+  const xs=P.flatMap(p=>[p.F.lo,p.F.hi,p.F.rr]), ys=P.flatMap(p=>[p.L.lo,p.L.hi,p.L.rr]);
+  let xl=[Math.log(Math.min(...xs)),Math.log(Math.max(...xs))], yl=[Math.log(Math.min(...ys)),Math.log(Math.max(...ys))];
+  const pad=(a,f)=>{const d=(a[1]-a[0])*f;return[a[0]-d,a[1]+d]}; xl=pad(xl,.04); yl=pad(yl,.04);
+  const X=v=>SC.l+(Math.log(v)-xl[0])/(xl[1]-xl[0])*(SC.w-SC.l-SC.r), Y=v=>SC.h-SC.b-(Math.log(v)-yl[0])/(yl[1]-yl[0])*(SC.h-SC.b-SC.t);
+  const tx=[0.5,0.6,0.7,0.8,1,1.25,1.5,2], ty=[0.4,0.5,0.7,1,1.5,2,3];
+  tx.forEach(v=>{if(Math.log(v)<xl[0]||Math.log(v)>xl[1])return; svg.appendChild(el('line',{class:v===1?'rl':'gl',x1:X(v),x2:X(v),y1:SC.t,y2:SC.h-SC.b})); svg.appendChild(el('text',{class:'tk','text-anchor':'middle',x:X(v),y:SC.h-SC.b+15},nf(v,v<1?1:(v%1?2:0))));});
+  ty.forEach(v=>{if(Math.log(v)<yl[0]||Math.log(v)>yl[1])return; svg.appendChild(el('line',{class:v===1?'rl':'gl',x1:SC.l,x2:SC.w-SC.r,y1:Y(v),y2:Y(v)})); svg.appendChild(el('text',{class:'tk','text-anchor':'end',x:SC.l-6,y:Y(v)+3.5},nf(v,v<1?1:(v%1?1:0))));});
+  svg.appendChild(el('text',{class:'axl','text-anchor':'middle',x:(SC.l+SC.w-SC.r)/2,y:SC.h-8},esc(lang==='es'?'Accidentes por habitante (1 = media española)':'Crashes per inhabitant (1 = Spanish average)')));
+  const yl_=el('text',{class:'axl','text-anchor':'middle',transform:'translate(13 '+((SC.t+SC.h-SC.b)/2)+') rotate(-90)'},esc(lang==='es'?'Gravedad de los accidentes (1 = media española)':'Seriousness of crashes (1 = Spanish average)')); svg.appendChild(yl_);
+  svg.appendChild(el('text',{class:'ql','text-anchor':'end',x:SC.w-SC.r-4,y:SC.t+12},esc(lang==='es'?'más frecuentes, más graves':'more frequent, more severe')));
+  svg.appendChild(el('text',{class:'ql',x:SC.l+4,y:SC.t+12},esc(lang==='es'?'menos frecuentes, más graves':'less frequent, more severe')));
+  svg.appendChild(el('text',{class:'ql','text-anchor':'end',x:SC.w-SC.r-4,y:SC.h-SC.b-6},esc(lang==='es'?'más frecuentes, menos graves':'more frequent, less severe')));
+  svg.appendChild(el('text',{class:'ql',x:SC.l+4,y:SC.h-SC.b-6},esc(lang==='es'?'menos frecuentes, menos graves':'less frequent, less severe')));
+  const gc=el('g'), gp=el('g'), gl=el('g'); svg.appendChild(gc); svg.appendChild(gp); svg.appendChild(gl);
+  P.forEach(p=>{
+    gc.appendChild(el('line',{class:'ci',x1:X(p.F.lo),x2:X(p.F.hi),y1:Y(p.L.rr),y2:Y(p.L.rr)}));
+    gc.appendChild(el('line',{class:'ci',x1:X(p.F.rr),x2:X(p.F.rr),y1:Y(p.L.lo),y2:Y(p.L.hi)}));
+  });
+  P.forEach(p=>{
+    const si=S.sel.indexOf(p.c);
+    const c=el('circle',{class:'pt','data-c':p.c,cx:X(p.F.rr),cy:Y(p.L.rr),r:si>=0?6.5:3.8,tabindex:0,role:'button','aria-label':p.n});
+    if(si>=0){c.style.fill=slotColor(si);c.style.fillOpacity=1;c.style.stroke=css('--ink');}
+    gp.appendChild(c);
+  });
+  const far=[...P].sort((a,b)=>(Math.abs(Math.log(b.F.rr))+Math.abs(Math.log(b.L.rr)))-(Math.abs(Math.log(a.F.rr))+Math.abs(Math.log(a.L.rr)))).slice(0,5).map(p=>p.c);
+  new Set([...far,...S.sel]).forEach(c=>{const p=byC[c], x=X(p.F.rr), y=Y(p.L.rr), right=x<SC.w-110;
+    gl.appendChild(el('text',{class:'nm','text-anchor':right?'start':'end',x:x+(right?9:-9),y:y+3.5},esc(p.n.split('/')[0])));});
+  svg.onclick=e=>{const t=e.target.closest('[data-c]'); if(t)toggle(+t.dataset.c)};
+  svg.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset&&e.target.dataset.c){e.preventDefault();toggle(+e.target.dataset.c)}};
+  svg.onmouseover=e=>{const t=e.target.closest('[data-c]'); setHover(t?+t.dataset.c:null,e)};
+  svg.onmousemove=e=>{if(S.hov!=null)moveTip(e)};
+  svg.onmouseleave=()=>setHover(null);
+}
+
+
+/* ---------------- funnel: size against risk ---------------- */
+const FN={w:520,h:300,l:44,r:12,t:10,b:42};
+function renderFunnel(){
+  const svg=$('fn'); svg.setAttribute('viewBox','0 0 '+FN.w+' '+FN.h); svg.innerHTML='';
+  const ref=D.nat.rate, xl=[Math.log(60000),Math.log(8e6)], ymax=Math.ceil(Math.max(...P.map(p=>p.rate))/25)*25+5;
+  const X=v=>FN.l+(Math.log(v)-xl[0])/(xl[1]-xl[0])*(FN.w-FN.l-FN.r), Y=v=>FN.h-FN.b-v/ymax*(FN.h-FN.b-FN.t);
+  [1e5,3e5,1e6,3e6].forEach(v=>{svg.appendChild(el('line',{class:'gl',x1:X(v),x2:X(v),y1:FN.t,y2:FN.h-FN.b})); svg.appendChild(el('text',{class:'tk','text-anchor':'middle',x:X(v),y:FN.h-FN.b+15},v>=1e6?nf(v/1e6)+' M':nf(v/1e3)+' k'));});
+  for(let v=0;v<=ymax;v+=25){svg.appendChild(el('line',{class:'gl',x1:FN.l,x2:FN.w-FN.r,y1:Y(v),y2:Y(v)})); svg.appendChild(el('text',{class:'tk','text-anchor':'end',x:FN.l-6,y:Y(v)+3.5},nf(v)));}
+  svg.appendChild(el('text',{class:'axl','text-anchor':'middle',x:(FN.l+FN.w-FN.r)/2,y:FN.h-8},esc(T().fnX)));
+  svg.appendChild(el('text',{class:'axl','text-anchor':'middle',transform:'translate(12 '+((FN.t+FN.h-FN.b)/2)+') rotate(-90)'},esc(T().fnY)));
+  const lim=(pop,z,up)=>{const mu=ref*4*pop/1e6, q=Math.sqrt(mu)+(up?z:-z)/2; return ref*Math.max(q,0)*Math.max(q,0)/mu;};
+  const xs=[]; for(let i=0;i<=60;i++)xs.push(Math.exp(xl[0]+(xl[1]-xl[0])*i/60));
+  const cap=v=>Math.min(v,ymax);
+  svg.appendChild(el('path',{class:'band',d:'M'+xs.map(x=>X(x)+' '+Y(cap(lim(x,3.09,true)))).join('L')+'L'+[...xs].reverse().map(x=>X(x)+' '+Y(lim(x,3.09,false))).join('L')+'Z'}));
+  [[1.96,1],[3.09,2]].forEach(a=>[true,false].forEach(up=>svg.appendChild(el('path',{class:'lim'+(a[1]===2?' lim2':''),d:'M'+xs.map(x=>X(x)+' '+Y(cap(lim(x,a[0],up)))).join('L')}))));
+  svg.appendChild(el('line',{class:'rl',x1:FN.l,x2:FN.w-FN.r,y1:Y(ref),y2:Y(ref)}));
+  const gp=el('g'), gl=el('g'); svg.appendChild(gp); svg.appendChild(gl);
+  const zs={}; P.forEach(p=>{const mu=ref*p.py/1e6; zs[p.c]=(Math.sqrt(p.deaths)-Math.sqrt(mu))*2;});
+  P.forEach(p=>{
+    const si=S.sel.indexOf(p.c), z=zs[p.c];
+    const c=el('circle',{class:'pt','data-c':p.c,cx:X(p.pop25),cy:Y(p.rate),r:si>=0?6.5:4,tabindex:0,role:'button','aria-label':p.n});
+    c.style.fill=si>=0?slotColor(si):(z>3.09?'var(--dhi)':(z<-3.09?'var(--dlo)':'var(--ink3)')); c.style.fillOpacity=si>=0||Math.abs(z)>3.09?1:.55;
+    if(si>=0)c.style.stroke=css('--ink'); gp.appendChild(c);
+  });
+  const far=[...P].sort((a,b)=>Math.abs(zs[b.c])-Math.abs(zs[a.c])).slice(0,5).map(p=>p.c);
+  new Set([...far,...S.sel]).forEach(c=>{const p=byC[c], x=X(p.pop25), y=Y(p.rate), right=x<FN.w-100;
+    gl.appendChild(el('text',{class:'nm','text-anchor':right?'start':'end',x:x+(right?8:-8),y:y+3.5},esc(p.n.split('/')[0])));});
+  svg.onclick=e=>{const t=e.target.closest('[data-c]'); if(t)toggle(+t.dataset.c)};
+  svg.onmouseover=e=>{const t=e.target.closest('[data-c]'); setHover(t?+t.dataset.c:null,e)};
+  svg.onmousemove=e=>{if(S.hov!=null)moveTip(e)};
+  svg.onmouseleave=()=>setHover(null);
+}
+/* ---------------- why: frequency x seriousness x deaths per crash ---------------- */
+function renderWhy(){
+  const svg=$('wy'), t=T(), keys=['cf','cs','cm','ct'], sel=S.sel.map(c=>byC[c]);
+  if(!sel.length){svg.setAttribute('viewBox','0 0 520 40'); svg.innerHTML=''; svg.appendChild(el('text',{class:'bt',x:2,y:24},esc(t.whyEmpty))); svg.onclick=svg.onmouseover=svg.onmousemove=svg.onmouseleave=null; return;}
+  const W=520, l=150, r=46, gap=36, gh=4*15+30, H=sel.length*gh+30;
+  const vals=sel.flatMap(p=>keys.map(k=>p[k])); let lo=Math.min(0,...vals), hi=Math.max(0,...vals); lo=lo<0?lo*1.1-.1:-.1; hi=hi>0?hi*1.1+.1:.1;
+  const X=v=>l+gap+(v-lo)/(hi-lo)*(W-l-gap-r);
+  svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.innerHTML='';
+  [0.25,0.5,1,2,4].forEach(m=>{const v=Math.log(m); if(v<lo||v>hi)return; svg.appendChild(el('line',{class:m===1?'rl':'gl',x1:X(v),x2:X(v),y1:6,y2:H-22})); svg.appendChild(el('text',{class:'tk','text-anchor':'middle',x:X(v),y:H-8},'×'+nf(m,m<1?2:0)));});
+  sel.forEach((p,i)=>{
+    const y0=10+i*gh, g=el('g',{class:'bar','data-c':p.c}); svg.appendChild(g);
+    g.appendChild(el('circle',{cx:6,cy:y0+7,r:5,fill:slotColor(i)})); g.appendChild(el('text',{class:'gn',x:17,y:y0+11},esc(p.n.split('/')[0])));
+    keys.forEach((k,j)=>{
+      const y=y0+22+j*15, v=p[k], x0=X(0), x1=X(v);
+      g.appendChild(el('text',{class:'bt','text-anchor':'end',x:l-8,y:y+9.5,style:j===3?'font-weight:600;fill:var(--ink)':''},esc(t.whyRows[j])));
+      const b=el('rect',{x:Math.min(x0,x1),y:y,width:Math.max(Math.abs(x1-x0),1),height:11,rx:3}); b.style.fill=slotColor(i); b.style.fillOpacity=j===3?1:.5; g.appendChild(b);
+      g.appendChild(el('text',{class:'bv','text-anchor':v>=0?'start':'end',x:x1+(v>=0?5:-5),y:y+9.5},'×'+nf(Math.exp(v),2)));
+    });
+  });
+  svg.onclick=e=>{const q=e.target.closest('[data-c]'); if(q)toggle(+q.dataset.c)};
+  svg.onmouseover=svg.onmousemove=svg.onmouseleave=null;
+}
+/* ---------------- hot cells by province ---------------- */
+function renderHot(){
+  const svg=$('ht'), t=T(), wide=svg.parentNode.clientWidth>=1000, cols=wide?2:1, n=wide?14:12;
+  const list=P.filter(p=>p.cells>=20).map(p=>({p,sh:p.hot/p.cells})).sort((a,b)=>b.sh-a.sh||b.p.hot-a.p.hot).slice(0,n);
+  const cw=520, W=cw*cols, l=130, r=76, rh=19, per=Math.ceil(list.length/cols), H=per*rh+14, mx=Math.max(...list.map(a=>a.sh));
+  svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.innerHTML='';
+  list.forEach((a,i)=>{
+    const col=Math.floor(i/per), y=6+(i%per)*rh, x0=col*cw, si=S.sel.indexOf(a.p.c), g=el('g',{class:'bar','data-c':a.p.c,tabindex:0,role:'button','aria-label':a.p.n}); svg.appendChild(g);
+    const bw=Math.max(a.sh/mx*(cw-l-r-(wide?24:0)),2);
+    g.appendChild(el('text',{class:'bt','text-anchor':'end',x:x0+l-8,y:y+11,style:si>=0?'font-weight:600;fill:var(--ink)':''},esc(a.p.n.split('/')[0])));
+    const b=el('rect',{x:x0+l,y:y,width:bw,height:14,rx:4}); b.style.fill=si>=0?slotColor(si):'var(--dhi)'; b.style.fillOpacity=si>=0?1:.35+.65*a.sh/mx; g.appendChild(b);
+    g.appendChild(el('text',{class:'bv',x:x0+l+bw+6,y:y+11},nf(a.sh*100,0)+'% · '+nf(a.p.hot)+'/'+nf(a.p.cells)));
+  });
+  svg.onclick=e=>{const q=e.target.closest('[data-c]'); if(q)toggle(+q.dataset.c)};
+  svg.onmouseover=e=>{const q=e.target.closest('[data-c]'); setHover(q?+q.dataset.c:null,e)};
+  svg.onmousemove=e=>{if(S.hov!=null)moveTip(e)};
+  svg.onmouseleave=()=>setHover(null);
+}
+let _rw=window.innerWidth; window.addEventListener('resize',()=>{if(Math.abs(window.innerWidth-_rw)>40){_rw=window.innerWidth;renderHot();}});
+
+
+/* ---------------- ranking intervals ---------------- */
+function renderRI(){
+  const svg=$('ri'), t=T(), n=P.length;
+  const top=[...P].sort((a,b)=>a.R.rk-b.R.rk).slice(0,12).map(p=>p.c);
+  const ids=[...top]; S.sel.forEach(c=>{if(ids.indexOf(c)<0)ids.push(c);});
+  const list=ids.map(c=>byC[c]).sort((a,b)=>a.R.rk-b.R.rk);
+  const W=520, l=122, r=100, rh=19, ax=22, H=ax+list.length*rh+10;
+  const X=v=>l+(v-1)/(n-1)*(W-l-r);
+  svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.innerHTML='';
+  svg.appendChild(el('rect',{x:X(1)-4,y:ax-6,width:X(10)-X(1)+8,height:list.length*rh+8,rx:6,fill:'var(--k)',opacity:.10}));
+  [1,10,20,30,40,52].forEach(v=>{svg.appendChild(el('line',{class:'gl',x1:X(v),x2:X(v),y1:ax-6,y2:H-4})); svg.appendChild(el('text',{class:'tk','text-anchor':'middle',x:X(v),y:ax-9},String(v)));});
+  list.forEach((p,i)=>{
+    const e=p.R, y=ax+i*rh+rh/2, si=S.sel.indexOf(p.c), col=si>=0?slotColor(si):'var(--k)';
+    const g=el('g',{class:'bar','data-c':p.c,tabindex:0,role:'button','aria-label':p.n}); svg.appendChild(g);
+    g.appendChild(el('rect',{x:0,y:y-rh/2,width:W,height:rh,fill:'transparent'}));
+    g.appendChild(el('text',{class:'bt','text-anchor':'end',x:l-8,y:y+3.6,style:si>=0?'font-weight:600;fill:var(--ink)':''},esc(p.n.split('/')[0])));
+    const b=el('rect',{x:X(e.rklo),y:y-4,width:Math.max(X(e.rkhi)-X(e.rklo),3),height:8,rx:4}); b.style.fill=col; b.style.fillOpacity=.42; g.appendChild(b);
+    const d=el('circle',{cx:X(e.rk),cy:y,r:4.2}); d.style.fill=col; d.style.stroke='var(--ink)'; d.style.strokeWidth=1; g.appendChild(d);
+    g.appendChild(el('text',{class:'bv',x:W-r+14,y:y+3.6},nf(e.rk)+' ('+nf(e.rklo)+'–'+nf(e.rkhi)+') · '+nf(e.t10*100,0)+'%'));
+  });
+  svg.onclick=e=>{const q=e.target.closest('[data-c]'); if(q)toggle(+q.dataset.c)};
+  svg.onmouseover=e=>{const q=e.target.closest('[data-c]'); setHover(q?+q.dataset.c:null,e)};
+  svg.onmousemove=e=>{if(S.hov!=null)moveTip(e)};
+  svg.onmouseleave=()=>setHover(null);
+}
+/* ---------------- enlarge / close ---------------- */
+let ZC=null, ZPH=null;
+function zoomBtns(){document.querySelectorAll('.zbtn').forEach(b=>{const o=b.parentNode===ZC; b.setAttribute('aria-label',o?T().zClose:T().zOpen); b.title=o?T().zClose:T().zOpen;});}
+function openZoom(card){
+  if(ZC)closeZoom();
+  ZC=card; ZPH=document.createElement('div'); ZPH.style.height=card.offsetHeight+'px'; if(card.classList.contains('wide'))ZPH.style.gridColumn='1/-1';
+  card.parentNode.insertBefore(ZPH,card); card.classList.add('zoom'); card.setAttribute('role','dialog'); card.setAttribute('aria-modal','true');
+  document.body.classList.add('zooming'); $('zbd').hidden=false; zoomBtns(); card.querySelector('.zbtn').focus();
+  if(card.id==='c-ht')renderHot(); setHover(null);
+}
+function closeZoom(){
+  if(!ZC)return; const c=ZC; ZC=null;
+  c.classList.remove('zoom'); c.removeAttribute('role'); c.removeAttribute('aria-modal'); if(ZPH){ZPH.remove();ZPH=null;}
+  document.body.classList.remove('zooming'); $('zbd').hidden=true; zoomBtns(); if(c.id==='c-ht')renderHot(); c.querySelector('.zbtn').focus(); setHover(null);
+}
+document.querySelectorAll('.zbtn').forEach(b=>b.onclick=()=>{const c=b.parentNode; if(ZC===c)closeZoom(); else openZoom(c);});
+$('zbd').onclick=closeZoom;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(ZC)closeZoom(); else if(S.pop!=null||S.cell!=null){S.pop=null;S.cell=null;update();}}});
+document.addEventListener('focusin',e=>{if(ZC&&!ZC.contains(e.target))ZC.querySelector('.zbtn').focus();});
+/* ---------------- balance the two columns ---------------- */
+function balance(){
+  if(ZC)return;
+  const L=$('colL'), R=$('colR'), mv=[$('c-wy'),$('c-ri'),$('c-ht')];
+  if(window.innerWidth<=860){mv.forEach(e=>R.appendChild(e)); renderHot(); return;}
+  let best=null;
+  for(let m=0;m<8;m++){
+    mv.forEach((e,i)=>((m>>i)&1?L:R).appendChild(e)); renderHot();
+    const d=Math.abs(L.offsetHeight-R.offsetHeight); if(!best||d<best.d-40)best={m,d};
+  }
+  mv.forEach((e,i)=>((best.m>>i)&1?L:R).appendChild(e)); renderHot();
+}
+let _bw=0; window.addEventListener('resize',()=>{if(Math.abs(window.innerWidth-_bw)>40){_bw=window.innerWidth; balance();}});
+
+/* ---------------- comparison table ---------------- */
+const flag=(lo,hi,ref)=>lo>ref?'<i class="up">▲</i>':(hi<ref?'<i class="dn">▼</i>':'');
+const dash='<span style="color:var(--ink3)">—</span>';
+function effCell(k,p){
+  const e=p[k], t=T();
+  return flag(e.lo,e.hi,1)+nf(e.rr,2)+'<small>('+nf(e.lo,2)+'–'+nf(e.hi,2)+')</small><small>'+t.rk(nf(e.rk),nf(e.rklo),nf(e.rkhi))+'</small><small>'+t.top10(pct(e.t10,0))+'</small>';
+}
+function zCell(p){
+  const f=z=>z==null?'—':(Math.abs(z)>Z998?'<b class="z3">'+nf(z,1)+'</b>':nf(z,1));
+  return f(p.z.a)+' · '+f(p.z.i)+' · '+f(p.z.u);
+}
+function ebCell(e){return flag(e.lo,e.hi,D.nat.share)+pct(e.eb,2)+'<small>('+pct(e.lo,2)+'–'+pct(e.hi,2)+')</small>'}
+function renderTable(){
+  const t=T(), n=D.nat, cols=S.sel.map(c=>byC[c]);
+  const tb=$('cmp'); const R=t.row;
+  const rows=[
+   ['sec',t.sec.tot],
+   [R.pop,p=>nf(p.pop25),nf(n.pop25)],
+   [R.crashes,p=>nf(p.crashes),nf(n.crashes)],
+   [R.fatal,p=>nf(p.fatal),nf(n.fatal)],
+   [R.deaths,p=>nf(p.deaths),nf(n.deaths)],
+   ['sec',t.sec.risk],
+   [R.rate,p=>flag(p.rlo,p.rhi,n.rate)+nf(p.rate,1)+'<small>('+nf(p.rlo,1)+'–'+nf(p.rhi,1)+')</small>',nf(n.rate,1)],
+   [R.ratio,p=>'×'+nf(p.rate/n.rate,2),'×1'],
+   [R.rank,p=>nf(rateRank[p.c])+' / 52',dash],
+   [R.cpi,p=>{const g=LAYERS.fraw.vals[p.c];return flag(g.lo,g.hi,LAYERS.fraw.ref0)+nf(g.v,2)+'<small>('+nf(g.lo,2)+'–'+nf(g.hi,2)+')</small>'},nf(LAYERS.fraw.ref0,2)],
+   [R.cpiRank,p=>nf(fRank[p.c])+' / 52',dash],
+   ['sec',t.sec.drv],
+   [R.freq,p=>'×'+nf(Math.exp(p.cf),2),'×1'],
+   [R.sev,p=>'×'+nf(Math.exp(p.cs),2),'×1'],
+   [R.mult,p=>'×'+nf(Math.exp(p.cm),2),'×1'],
+   [R.prod,p=>'×'+nf(Math.exp(p.ct),2),'×1'],
+   ['sec',t.sec.bym],
+   [R.R,p=>effCell('R',p),'1'],
+   [R.F,p=>effCell('F',p),'1'],
+   [R.L,p=>effCell('L',p),'1'],
+   ['sec',t.sec.fat],
+   [R.rawA,p=>pct(p.eb.raw,2),pct(n.share,2)],
+   [R.ebA,p=>ebCell(p.eb),pct(n.share,2)],
+   [R.ebI,p=>ebCell(p.ebi),dash],
+   ['sec',t.sec.hs],
+   [R.hot,p=>p.cells?nf(p.hot)+' / '+nf(p.cells):dash,nf(n.hot)+' / '+nf(n.cells)]
+  ];
+  let h='<thead><tr><th scope="col"></th><th scope="col" class="spain">'+esc(t.spain)+'</th>';
+  cols.forEach((p,i)=>{h+='<th scope="col"><span class="chip"><span class="dot" style="background:'+slotColor(i)+'"></span>'+esc(p.n)+'<button type="button" class="rm" data-rm="'+p.c+'" aria-label="Remove '+esc(p.n)+'">×</button></span></th>';});
+  h+='</tr></thead><tbody>';
+  rows.forEach(r=>{
+    if(r[0]==='sec'){h+='<tr class="sect"><td colspan="'+(2+cols.length)+'">'+esc(r[1])+'</td></tr>';return;}
+    h+='<tr><td>'+esc(r[0])+'</td><td class="spain">'+r[2]+'</td>'+cols.map(p=>'<td>'+r[1](p)+'</td>').join('')+'</tr>';
+  });
+  h+='</tbody>';
+  tb.innerHTML=h;
+  tb.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>toggle(+b.dataset.rm));
+  $('cmpempty').textContent=S.sel.length?t.flagNote:t.cmpEmpty;
+}
+
+/* ---------------- hover & tooltip ---------------- */
+const tip=$('tip');
+function setHover(c,ev,anchor){
+  S.chov=null;
+  if(S.hov===c&&c!=null){ if(ev)moveTip(ev); return; }
+  S.hov=c;
+  const gh=$('ghov'); gh.innerHTML='';
+  document.querySelectorAll('.row.hov,.pt.hov').forEach(e=>e.classList.remove('hov'));
+  if(c==null){tip.style.display='none';return;}
+  gh.appendChild(el('path',{class:'ol hov',d:D.paths[c]}));
+  document.querySelectorAll('.row[data-c="'+c+'"],.pt[data-c="'+c+'"]').forEach(e=>e.classList.add('hov'));
+  const p=byC[c], L=LAYERS[S.layer], g=L.vals[c], t=T();
+  tip.innerHTML='<b>'+esc(p.n)+'</b><span>'+esc(t.vals[S.layer])+': '+esc(ciText(S.layer,g))+'</span><span>'+esc(t.tipLine(nf(p.deaths),nf(p.crashes)))+'</span>'+(L.sig(c)?'<span>● '+esc(t.tipExcl)+'</span>':'');
+  tip.style.display='block';
+  if(ev)moveTip(ev); else if(anchor){const r=anchor.getBoundingClientRect(); place(r.left+r.width/2,r.top+r.height/2);}
+}
+function place(x,y){
+  const w=tip.offsetWidth,h=tip.offsetHeight; let px=x+14, py=y+14;
+  if(px+w>innerWidth-8)px=x-w-14; if(py+h>innerHeight-8)py=y-h-14;
+  tip.style.left=Math.max(8,px)+'px'; tip.style.top=Math.max(8,py)+'px';
+}
+function moveTip(e){place(e.clientX,e.clientY)}
+
+/* ---------------- selection ---------------- */
+function toggle(c){
+  const i=S.sel.indexOf(c);
+  if(i>=0)S.sel.splice(i,1); else {S.sel.push(c); if(S.sel.length>3)S.sel.shift();}
+  update();
+}
+function fillAdd(){
+  const s=$('add'); s.innerHTML='<option value="">'+esc(T().addPh)+'</option>';
+  [...P].sort((a,b)=>a.n.localeCompare(b.n,lang)).forEach(p=>{const o=document.createElement('option');o.value=p.c;o.textContent=p.n;s.appendChild(o);});
+}
+$('add').onchange=e=>{const v=+e.target.value; if(v&&S.sel.indexOf(v)<0){S.sel.push(v);if(S.sel.length>3)S.sel.shift();} e.target.value=''; update();};
+$('clear').onclick=()=>{S.sel=[];update();};
+$('v-prov').onclick=()=>{S.view='prov';S.pop=null;update();};
+$('v-cell').onclick=()=>{S.view='cell';S.pop=null;update();};
+$('cprov').onchange=()=>{S.cprov=+$('cprov').value; update();};
+$('celltop').onclick=e=>{const tr=e.target.closest('tr[data-i]'); if(tr)selectCell(+tr.dataset.i)};
+$('celltop').onmouseover=e=>{const tr=e.target.closest('tr[data-i]'); setCellHover(tr?+tr.dataset.i:null,e)};
+$('celltop').onmousemove=e=>{if(S.chov!=null)moveTip(e)};
+$('celltop').onmouseleave=()=>setCellHover(null);
+$('sortdir').onclick=()=>{S.asc=!S.asc;update();};
+$('more').onclick=()=>{S.topn=S.topn>30?30:100;update();};
+$('hot').onchange=e=>{S.hot=e.target.checked;update();};
+
+/* ---------------- language & hash ---------------- */
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll('[data-i]').forEach(e=>{const k=e.dataset.i; if(k!=='how'){const v=T()[k]; if(typeof v==='string')e.textContent=v;}});
+  $('how').innerHTML=T().how.map(s=>'<li>'+esc(s)+'</li>').join('');
+  $('l-en').setAttribute('aria-pressed',String(lang==='en')); $('l-es').setAttribute('aria-pressed',String(lang==='es'));
+  fillAdd(); zoomBtns();
+}
+$('l-en').onclick=()=>{lang='en';applyLang();update();balance();};
+$('l-es').onclick=()=>{lang='es';applyLang();update();balance();};
+function writeHash(){
+  try{history.replaceState(null,'','#'+[S.view==='cell'?S.cl:S.layer].concat(S.sel).concat(S.cell!=null?['c'+S.cell]:[]).concat(S.asc?['asc']:[]).concat(S.topn>30?['n100']:[]).join('-'));}catch(e){}
+}
+function readHash(){
+  const h=(location.hash||'').slice(1); if(!h)return false;
+  const parts=h.split('-'), k=parts[0];
+  if(LAYERS[k]){S.view='prov';S.layer=k;} else if(CLAY[k]){S.view='cell';S.cl=k;} else return false;
+  S.sel=[]; S.cell=null; S.asc=false; S.topn=30;
+  parts.slice(1).forEach(x=>{
+    if(x==='asc')S.asc=true; else if(x==='n100')S.topn=100;
+    else if(/^c\d+$/.test(x)){const i=+x.slice(1); if(CELL[i])S.cell=i;}
+    else{const c=+x; if(byC[c]&&S.sel.length<3&&S.sel.indexOf(c)<0)S.sel.push(c);}
+  });
+  return true;
+}
+
+function update(){
+  loadColors(); renderViewSeg(); renderLayers(); renderLegend(); renderMap(); renderRankPanel(); renderScatter(); renderFunnel(); renderWhy(); renderRI(); renderHot(); renderTable(); renderCellInfo(); renderPop(); writeHash();
+  setHover(null);
+}
+function init(){
+  loadColors();
+  if(!readHash())S.sel=[42,24,52];
+  applyLang(); update(); _bw=window.innerWidth; balance();
+  try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',update);}catch(e){}
+  new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+}
+if(document.fonts&&document.fonts.ready){init();document.fonts.ready.then(()=>{});}else init();
+</script>

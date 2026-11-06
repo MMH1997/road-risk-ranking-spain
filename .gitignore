@@ -1,0 +1,16 @@
+# inputs and outputs of the analysis are not versioned
+data/raw/
+outputs/*
+!outputs/.gitkeep
+
+# python / jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+.env
+
+# os / editors
+.DS_Store
+Thumbs.db
+.vscode/
