@@ -2,6 +2,8 @@
 
 Ranking of road crash risk in Spain **with uncertainty**: Bayesian provincial models, 2-km road segments and 10 km grid cells, validated out of sample on DGT crash microdata, 2022–2025. Reproducible notebook and interactive atlas (Spanish / English).
 
+### → [Open the interactive atlas](https://MMH1997.github.io/road-risk-atlas-spain/)
+
 > **Resumen.** Los rankings de provincias y de tramos por muertes parten de recuentos pequeños, así que las diferencias entre unidades reflejan tanto el azar como el riesgo. Este repositorio contiene el cuaderno que reproduce el análisis (404 809 accidentes con víctimas y 7 112 fallecidos a 30 días, 2022–2025) y un atlas interactivo bilingüe para lectores no especialistas.
 
 <p align="center">
@@ -14,7 +16,7 @@ Ranking of road crash risk in Spain **with uncertainty**: Bayesian provincial mo
 | Path | Content |
 |---|---|
 | [`notebooks/road_risk_analysis.ipynb`](notebooks/road_risk_analysis.ipynb) | The whole analysis, from the raw DGT files to the tables and figures of the paper. Outputs are stripped; run it to regenerate them. |
-| [`docs/index.html`](docs/index.html) | The interactive atlas: one self-contained file (~1 MB). It is what GitHub Pages serves. |
+| [`docs/index.html`](docs/index.html) | The interactive atlas: one self-contained file (~1 MB). The public copy, served on the web, is in [road-risk-atlas-spain](https://github.com/MMH1997/road-risk-atlas-spain). |
 | [`atlas/`](atlas) | The atlas template and data (`src/`) and the scripts that build it and regenerate its data. |
 | [`data/`](data) | Where the input files go (not versioned) and how to obtain each one. |
 | [`outputs/`](outputs) | Where the notebook writes tables, figures, caches and the reproducibility manifest (not versioned). |
@@ -45,10 +47,9 @@ See the paper for the full results and their limits. The crash files contain no 
 
 ### How to open it
 
-GitHub shows `index.html` as source code, not as a page. There are two ways to see the map:
+The atlas is published at **[https://MMH1997.github.io/road-risk-atlas-spain/](https://MMH1997.github.io/road-risk-atlas-spain/)** from its own public repository, [road-risk-atlas-spain](https://github.com/MMH1997/road-risk-atlas-spain), so that this repository can stay private until the paper is published. GitHub shows `index.html` as source code, not as a page, so to see the map either use that address or download `docs/index.html` and open it in a browser (it works offline except for two web fonts and the map links).
 
-- **Locally:** download `docs/index.html` (the *Download raw file* button, or clone the repository) and open it in a browser. It works offline except for two web fonts and the map links.
-- **On the web (GitHub Pages):** in the repository, *Settings → Pages → Build and deployment → Deploy from a branch*, branch `main`, folder `/docs`. The atlas is then served at `https://MMH1997.github.io/road-risk-ranking-spain/`. This needs a public repository, or a GitHub plan that includes Pages for private ones.
+When the atlas changes, rebuild it (below) and copy `docs/index.html` to the public repository.
 
 To rebuild it after changing the template or the data:
 
