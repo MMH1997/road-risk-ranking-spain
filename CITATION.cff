@@ -6,12 +6,6 @@ authors:
   - family-names: "Méndez"
     given-names: "Manuel"
     affiliation: "Complutense University of Madrid"
-  - family-names: "Merayo"
-    given-names: "Mercedes G."
-    affiliation: "Complutense University of Madrid"
-  - family-names: "Núñez"
-    given-names: "Manuel"
-    affiliation: "Complutense University of Madrid"
 repository-code: "https://github.com/MMH1997/road-risk-ranking-spain"
 abstract: "Bayesian provincial models, 2-km segments and 10 km grid cells for ranking road crash risk in Spain with uncertainty, validated out of sample on DGT crash microdata 2022-2025, with a reproducible notebook and an interactive atlas."
 keywords:
