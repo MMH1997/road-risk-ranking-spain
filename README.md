@@ -34,7 +34,7 @@ The notebook is organised in numbered sections; the main questions are:
 ### Main results
 
 - Spain registers **36.6 deaths per million inhabitant-years**. The risk is highest in sparsely populated inland provinces (**Soria 128.1, 3.5 times the national rate**), and the excess comes mostly from the severity of crashes and not from their number.
-- Hot cells of 10 × 10 km concentrate around the large metropolitan areas and on the Mediterranean and Andalusian coast, and they **persist**: cells detected with earlier years have **3.7 to 4.3 times** the rate of the other cells in the following year.
+- Hot cells of 10 × 10 km concentrate around the large metropolitan areas and on the Mediterranean and Andalusian coast, and they **persist**: cells detected with earlier years have **4.0 to 4.5 times** the rate of the other cells in the following year.
 - Segments selected for one or two fatal crashes lose **85 % to 88 %** of them in the following year (regression to the mean).
 - Smoothing fatal counts helps only when it borrows information from casualty crashes, and **a plain count of casualty crashes ranks segments and cells as well as the model-based and Gi\* rankings** in the validation.
 - Spatial smoothing across neighbouring provinces improves the prediction of **frequency**, is indistinguishable from independent effects for **severity**, and is worse for **risk**.
