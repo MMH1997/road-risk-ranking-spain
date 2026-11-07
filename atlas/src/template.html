@@ -235,6 +235,7 @@ footer{margin-top:20px;color:var(--ink3);font-size:12.5px;max-width:110ch}
 #tip{position:fixed;z-index:30;pointer-events:none;background:var(--surface);color:var(--ink);border-radius:14px;font-size:12.5px;line-height:1.45;padding:9px 12px;max-width:270px;display:none;box-shadow:0 14px 34px -10px rgba(16,26,34,.4),0 0 0 1px var(--line)}
 #tip b{font-weight:600}
 #tip span{color:var(--ink2);display:block}
+#tip span.tn{font-size:11px;line-height:1.35;color:var(--ink3);margin-top:5px}
 
 @media (max-width:1260px){
   .stage{grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:16px}
@@ -400,7 +401,7 @@ en:{
  fnTitle:'Does size matter?', fnSub:'Each dot is a province: its population against the deaths per million recorded. Small provinces swing widely just by chance. Inside the shaded band (99.8%) the difference from Spain could be chance; the dashed lines mark 95% and 99.8%. Red or blue dots are outside it.', fnX:'Population, 1 January 2025 (log scale)', fnY:'Deaths per million per year',
  whyTitle:'What drives each province?', whySub:'For the provinces you picked (click on the map, the ranking or here): how many times more or fewer crashes per inhabitant, how much more serious, and how many deaths per fatal crash, compared with Spain. The last bar is the product, the risk of dying.', whyRows:['Crashes per inhabitant','Share that are fatal','Deaths per fatal crash','Risk of dying'], whyEmpty:'Pick a province on the map or in the ranking to see what drives its risk.',
  hotTitle:'Where hot cells concentrate', hotSub:'Provinces with the highest share of hot cells among their analysed 10 × 10 km cells (at least 20 cells). Next to each bar: share, hot cells and analysed cells. Click a bar to add the province.',
- scSub:'Each dot is a province. The further right, the more crashes with casualties per inhabitant than the Spanish average; the higher up, the more likely it is that a crash ends in death. The grey lines show how much each value could vary.',
+ scSub:'Each dot is a province. The further right, the more crashes with casualties per inhabitant than the Spanish average; the higher up, the more likely it is that a crash ends in death. The grey lines show how much each value could vary. Hover over a dot to see its frequency, seriousness and risk of dying.',
  scNote:'There is a clear pattern: provinces with fewer crashes per inhabitant tend to have more serious ones, and provinces with more crashes tend to have less serious ones.',
  spain:'Spain', avg:'national level',
  layers:{
@@ -421,7 +422,7 @@ en:{
   shareRaw:'The same percentage exactly as it comes out of the data, with no correction. Small provinces such as Ceuta, Melilla or Soria can look extreme only because they have few crashes; compare it with the corrected view.'},
  vals:{risk:'Deaths per million inhabitants per year',R:'Risk of dying (times the Spanish average)',F:'Crashes per inhabitant (times the average)',L:'Seriousness of crashes (times the average)',share:'Fatal crashes (% of crashes with casualties)',shareRaw:'Fatal crashes (% of crashes with casualties), as recorded',fraw:'Crashes with casualties per 1 000 inhabitants and year'},
  legRef:r=>'Grey = '+r+' (the Spanish average). Red = more, blue = less.', legOut:'Dark outline: the difference from Spain is clear and does not look like chance.',
- tipExcl:'Clearly different from Spain',
+ tipExcl:'Clearly different from Spain', tipSc:{F:'Crashes per inhabitant',L:'Seriousness of crashes',R:'Risk of dying'}, tipScNote:'Times the Spanish average; ▲ ▼ = clearly above or below. Risk also depends on the deaths per fatal crash, so it is not frequency times seriousness.',
  tipLine:(d,c)=>d+' deaths · '+c+' crashes with casualties',
  sec:{tot:'Totals 2022–2025',risk:'Risk per inhabitant',drv:'Why: compared with Spain',bym:'Adjusted estimates',fat:'Fatal crashes (% of crashes with casualties)',hs:'Hot cells'},
  row:{
@@ -494,7 +495,7 @@ es:{
  fnTitle:'¿Importa el tamaño?', fnSub:'Cada punto es una provincia: su población frente a las muertes por millón registradas. Las provincias pequeñas oscilan mucho solo por azar. Dentro de la banda sombreada (99,8 %) la diferencia con España podría ser casualidad; las líneas discontinuas marcan el 95 % y el 99,8 %. Los puntos rojos o azules quedan fuera.', fnX:'Población a 1 de enero de 2025 (escala logarítmica)', fnY:'Muertes por millón y año',
  whyTitle:'¿Qué pesa en cada provincia?', whySub:'Para las provincias elegidas (pulsa en el mapa, el ranking o aquí): cuántas veces más o menos accidentes por habitante, cuánto más graves y cuántas muertes por accidente mortal, comparado con España. La última barra es el producto, el riesgo de morir.', whyRows:['Accidentes por habitante','Proporción de mortales','Muertes por mortal','Riesgo de morir'], whyEmpty:'Elige una provincia en el mapa o en el ranking para ver qué pesa en su riesgo.',
  hotTitle:'Dónde se concentran las celdas calientes', hotSub:'Provincias con mayor proporción de celdas calientes entre sus celdas de 10 × 10 km analizadas (al menos 20 celdas). Junto a cada barra: proporción, celdas calientes y celdas analizadas. Pulsa una barra para añadir la provincia.',
- scSub:'Cada punto es una provincia. Cuanto más a la derecha, más accidentes con víctimas por habitante que la media española; cuanto más arriba, más probable es que un accidente acabe en muerte. Las líneas grises muestran cuánto podría variar cada valor.',
+ scSub:'Cada punto es una provincia. Cuanto más a la derecha, más accidentes con víctimas por habitante que la media española; cuanto más arriba, más probable es que un accidente acabe en muerte. Las líneas grises muestran cuánto podría variar cada valor. Pasa el ratón por un punto para ver su frecuencia, su gravedad y su riesgo de morir.',
  scNote:'Se ve un patrón claro: las provincias con menos accidentes por habitante suelen tener accidentes más graves, y las que tienen más accidentes suelen tenerlos menos graves.',
  spain:'España', avg:'nivel nacional',
  layers:{
@@ -515,7 +516,7 @@ es:{
   shareRaw:'El mismo porcentaje tal como sale de los datos, sin corregir. Las provincias pequeñas como Ceuta, Melilla o Soria pueden parecer extremas solo porque tienen pocos accidentes; compáralo con la vista corregida.'},
  vals:{risk:'Muertes por millón de habitantes y año',R:'Riesgo de morir (veces la media española)',F:'Accidentes por habitante (veces la media)',L:'Gravedad de los accidentes (veces la media)',share:'Accidentes mortales (% de los accidentes con víctimas)',shareRaw:'Accidentes mortales (% de los accidentes con víctimas), observado',fraw:'Accidentes con víctimas por 1 000 habitantes y año'},
  legRef:r=>'Gris = '+r+' (la media española). Rojo = más, azul = menos.', legOut:'Contorno oscuro: la diferencia con España es clara y no parece cosa del azar.',
- tipExcl:'Claramente distinta de España',
+ tipExcl:'Claramente distinta de España', tipSc:{F:'Accidentes por habitante',L:'Gravedad de los accidentes',R:'Riesgo de morir'}, tipScNote:'Veces la media española; ▲ ▼ = claramente por encima o por debajo. El riesgo depende además de las muertes por accidente mortal, así que no es frecuencia por gravedad.',
  tipLine:(d,c)=>d+' muertes · '+c+' accidentes con víctimas',
  sec:{tot:'Totales 2022–2025',risk:'Riesgo por habitante',drv:'Por qué: comparado con España',bym:'Estimaciones ajustadas',fat:'Accidentes mortales (% de los accidentes con víctimas)',hs:'Celdas calientes'},
  row:{
@@ -970,7 +971,7 @@ function renderScatter(){
     gl.appendChild(el('text',{class:'nm','text-anchor':right?'start':'end',x:x+(right?9:-9),y:y+3.5},esc(p.n.split('/')[0])));});
   svg.onclick=e=>{const t=e.target.closest('[data-c]'); if(t)toggle(+t.dataset.c)};
   svg.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset&&e.target.dataset.c){e.preventDefault();toggle(+e.target.dataset.c)}};
-  svg.onmouseover=e=>{const t=e.target.closest('[data-c]'); setHover(t?+t.dataset.c:null,e)};
+  svg.onmouseover=e=>{const t=e.target.closest('[data-c]'); setHover(t?+t.dataset.c:null,e,null,'sc')};
   svg.onmousemove=e=>{if(S.hov!=null)moveTip(e)};
   svg.onmouseleave=()=>setHover(null);
 }
@@ -1167,16 +1168,21 @@ function renderTable(){
 
 /* ---------------- hover & tooltip ---------------- */
 const tip=$('tip');
-function setHover(c,ev,anchor){
+function setHover(c,ev,anchor,src){
   S.chov=null;
-  if(S.hov===c&&c!=null){ if(ev)moveTip(ev); return; }
-  S.hov=c;
+  const key=c==null?null:c+'|'+(src||'');
+  if(S.hov===c&&c!=null&&S.hovKey===key){ if(ev)moveTip(ev); return; }
+  S.hov=c; S.hovKey=key;
   const gh=$('ghov'); gh.innerHTML='';
   document.querySelectorAll('.row.hov,.pt.hov').forEach(e=>e.classList.remove('hov'));
   if(c==null){tip.style.display='none';return;}
   gh.appendChild(el('path',{class:'ol hov',d:D.paths[c]}));
   document.querySelectorAll('.row[data-c="'+c+'"],.pt[data-c="'+c+'"]').forEach(e=>e.classList.add('hov'));
   const p=byC[c], L=LAYERS[S.layer], g=L.vals[c], t=T();
+  if(src==='sc'){
+    const mark=k=>{const s=LAYERS[k].sig(c); return s>0?' ▲':(s<0?' ▼':'')};
+    tip.innerHTML='<b>'+esc(p.n)+'</b>'+['F','L','R'].map(k=>'<span>'+esc(t.tipSc[k])+': '+esc(ciText(k,LAYERS[k].vals[c])+mark(k))+'</span>').join('')+'<span class="tn">'+esc(t.tipScNote)+'</span><span>'+esc(t.tipLine(nf(p.deaths),nf(p.crashes)))+'</span>';
+  } else
   tip.innerHTML='<b>'+esc(p.n)+'</b><span>'+esc(t.vals[S.layer])+': '+esc(ciText(S.layer,g))+'</span><span>'+esc(t.tipLine(nf(p.deaths),nf(p.crashes)))+'</span>'+(L.sig(c)?'<span>● '+esc(t.tipExcl)+'</span>':'');
   tip.style.display='block';
   if(ev)moveTip(ev); else if(anchor){const r=anchor.getBoundingClientRect(); place(r.left+r.width/2,r.top+r.height/2);}
