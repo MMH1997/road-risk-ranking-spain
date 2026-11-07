@@ -137,4 +137,4 @@ def clean(o):
 out=dict(org=[round(float(x0)/1000,3),round(float(y1)/1000,3)],marg=MARG,mh=round(float(H_main),1),vb=[round(float(W),1),round(float(H),1)],paths={str(k):v for k,v in paths.items()},frames=[{k:(round(v,1) if isinstance(v,float) else v) for k,v in f.items() if k in('x','y','w','h','label')} for f in frames],
          cl=cl,cn=cn,mun=munl,nat=clean(nat),provs=clean(provs))
 json.dump(out,open(A.out,'w'),separators=(',',':'),ensure_ascii=False)
-import os; print(os.path.getsize('atlas/data.json')/1024,'KB', 'viewBox',out['vb'])
+import os; print(os.path.getsize(A.out)/1024,'KB', 'viewBox',out['vb'])
