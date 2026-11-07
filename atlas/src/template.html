@@ -136,7 +136,7 @@ svg{display:block;max-width:100%}
 .flabel{font-size:19px;fill:var(--ink3);font-family:var(--font-body);font-weight:500}
 .hotc{fill:var(--hot);fill-opacity:.82;stroke:var(--land-line);stroke-width:.5px;vector-effect:non-scaling-stroke;pointer-events:none}
 .cell{stroke:none;shape-rendering:crispEdges;cursor:pointer;transition:opacity .35s}
-.cell.dim{opacity:.16}
+.cell.dim{opacity:.1}
 .bord{fill:none;stroke:var(--ink3);stroke-width:.7px;vector-effect:non-scaling-stroke;pointer-events:none;opacity:.6}
 .cellview .prov{fill:var(--surface)!important;pointer-events:none;stroke:none}
 
@@ -731,7 +731,7 @@ function setVB(to){
   const svg=$('map'), from=S.vb||[0,0,D.vb[0],D.vb[1]];
   if(from.every((v,i)=>Math.abs(v-to[i])<0.01))return;
   cancelAnimationFrame(vbAnim); S.vb=to;
-  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){svg.setAttribute('viewBox',to.join(' '));return;}
+  if(S.view==='cell'||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){svg.setAttribute('viewBox',to.join(' '));return;}
   const t0=performance.now(), dur=520, ez=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
   const step=now=>{const u=Math.min(1,(now-t0)/dur), k=ez(u); svg.setAttribute('viewBox',from.map((v,i)=>v+(to[i]-v)*k).join(' ')); posPop(); if(u<1)vbAnim=requestAnimationFrame(step);};
   vbAnim=requestAnimationFrame(step);
@@ -747,6 +747,10 @@ function renderMap(){
     svg.querySelectorAll('#gcell .cell').forEach(e=>{const q=CELL[+e.dataset.i]; e.style.fill=cellColor(q); e.classList.toggle('dim',!!S.cprov&&q.prov!==S.cprov);});
     setVB(S.cprov&&byC[S.cprov]?provBox(S.cprov):[0,0,D.vb[0],D.vb[1]]);
     const gs=$('gcsel'); gs.innerHTML='';
+    if(S.cprov&&D.paths[S.cprov]){
+      gs.appendChild(el('path',{class:'ol halo',d:D.paths[S.cprov]}));
+      const po=el('path',{class:'ol sel',d:D.paths[S.cprov]}); po.style.stroke=css('--ink'); po.style.strokeWidth='2px'; gs.appendChild(po);
+    }
     if(S.cell!=null){
       const c=CELL[S.cell];
       gs.appendChild(el('rect',{class:'ol halo',x:c.x-1,y:c.y-1,width:12,height:12}));
