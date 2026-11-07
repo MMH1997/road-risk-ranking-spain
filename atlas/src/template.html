@@ -45,7 +45,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,.prov:focus-visibl
 .lang button[aria-pressed="true"]{background:var(--pill);color:var(--pillink)}
 
 /* stage */
-.stage{position:relative;border-radius:34px;overflow:hidden;overflow:clip;
+.stage{position:relative;border-radius:34px;overflow:hidden;
   background:radial-gradient(900px 520px at 78% 8%,var(--sea1),transparent 70%),radial-gradient(700px 460px at 12% 96%,var(--sea3),transparent 70%),linear-gradient(165deg,var(--sea2),var(--sea2));
   display:grid;grid-template-columns:300px minmax(0,1fr) 392px;gap:0;padding:16px}
 .stage>.mapbox{grid-column:1/-1;grid-row:1;padding:0 calc(392px + 10px) 0 calc(300px + 10px);display:flex;align-items:flex-start;justify-content:center;min-width:0}
@@ -153,10 +153,12 @@ svg{display:block;max-width:100%}
 .rank .ax{font-size:10.5px;fill:var(--ink2);font-variant-numeric:tabular-nums;font-family:var(--font-body)}
 .rank .tipc{fill:var(--ink3)}
 .tablewrap{overflow-x:auto}
+#celltop{max-height:clamp(360px,60vh,620px);overflow-y:auto;overscroll-behavior:contain}
+#celltop .top th{background:var(--surface);z-index:1}
 table.top{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:12.5px}
 .top{width:100%;font-size:13px}
 .top th,.top td{padding:5px 2px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
-.top th{font-weight:600;color:var(--ink3);font-size:10.5px;position:sticky;top:0}
+.top th{font-weight:600;color:var(--ink3);font-size:10.5px;position:sticky;top:0;white-space:normal;line-height:1.2;vertical-align:bottom}
 .top td:nth-child(2),.top th:nth-child(2){text-align:left}
 .top td small{display:block;color:var(--ink3);font-size:11px;max-width:78px;overflow:hidden;text-overflow:ellipsis}
 .top td:first-child,.top th:first-child{text-align:left;color:var(--ink3);padding-left:0}
@@ -237,10 +239,6 @@ footer{margin-top:20px;color:var(--ink3);font-size:12.5px;max-width:110ch}
 #tip span{color:var(--ink2);display:block}
 #tip span.tn{font-size:11px;line-height:1.35;color:var(--ink3);margin-top:5px}
 
-/* wide layout: the map stays at the top and follows the scroll, instead of being centred in a row that the long table of the area view stretches */
-@media (min-width:1261px){
-  .stage>.mapbox>#map{position:sticky;top:16px;margin-top:8px}
-}
 @media (max-width:1260px){
   .stage{grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:16px}
   .stage>.mapbox{grid-column:2;grid-row:1;padding:0}
