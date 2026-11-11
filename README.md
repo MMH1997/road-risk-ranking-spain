@@ -88,14 +88,14 @@ The raw data are public and are **not** redistributed here; see [`data/README.md
 
 ## Citation
 
-If you use this code or the atlas, please cite the paper (reference to be added when it is published) and this repository; see [`CITATION.cff`](CITATION.cff).
+If you use this code or the atlas, please cite the paper (reference to be added when it is published) and this repository. GitHub's "Cite this repository" button gives the format (see [`CITATION.cff`](CITATION.cff)).
 
 ## License
 
-To be decided before the repository is made public. Note that the atlas data embed municipality names and populations taken from the SoftLine Spanish geographic database, whose terms must be respected, and administrative boundaries from IGN/CNIG (CC BY 4.0, attribution required).
+MIT, © 2026 Manuel Méndez ([`LICENSE`](LICENSE)): the copyright notice must be kept, and a citation as above is requested. Third-party data keep their own terms: the atlas embeds municipality names and populations from the SoftLine Spanish geographic database and administrative boundaries from IGN/CNIG (CC BY 4.0, attribution required).
 
 ## Authors and acknowledgements
 
-Manuel Méndez, Mercedes G. Merayo and Manuel Núñez, Design and Testing of Reliable Systems Research Group, Complutense University of Madrid.
+Manuel Méndez, Design and Testing of Reliable Systems Research Group, Complutense University of Madrid.
 
-Research partially supported by the State Research Agency (AEI) of the Spanish Ministry of Science and Innovation under grants PID2021-122215NB-C31 and PID2021-122215NB-C32 (AwESOMe), and by the Comunidad de Madrid under grant TEC-2024/COM-235 (DESAFíO-CM).
+This work was supported by the State Research Agency (AEI) of the Spanish Ministry of Science and Innovation under grant PID2025-168053OB-I00 (NEXUS), and by the Comunidad de Madrid under grant TEC-2024/COM-235 (DESAFíO-CM).
