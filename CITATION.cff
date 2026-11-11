@@ -1,12 +1,13 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below (and cite the paper when it is published)."
+message: "If you use this software, please cite it as below, and cite the paper when it is published."
 title: "road-risk-ranking-spain: ranking of road crash risk in Spain with uncertainty"
 type: software
 authors:
   - family-names: "Méndez"
     given-names: "Manuel"
-    affiliation: "Complutense University of Madrid"
+    affiliation: "Design and Testing of Reliable Systems Research Group, Complutense University of Madrid"
 repository-code: "https://github.com/MMH1997/road-risk-ranking-spain"
+license: MIT
 abstract: "Bayesian provincial models, 2-km segments and 10 km grid cells for ranking road crash risk in Spain with uncertainty, validated out of sample on DGT crash microdata 2022-2025, with a reproducible notebook and an interactive atlas."
 keywords:
   - road safety
@@ -14,4 +15,4 @@ keywords:
   - hot spots
   - regression to the mean
   - Spain
-# add before publishing: version, date-released, doi (Zenodo), license, and the preferred-citation block of the paper
+# add before publishing: version, date-released, doi (Zenodo) and the preferred-citation block of the paper
