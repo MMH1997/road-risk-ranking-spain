@@ -19,6 +19,7 @@ Ranking of road crash risk in Spain **with uncertainty**: Bayesian provincial mo
 | [`docs/index.html`](docs/index.html) | The interactive atlas: one self-contained file (~1 MB). The public copy, served on the web, is in [road-risk-atlas-spain](https://github.com/MMH1997/road-risk-atlas-spain). |
 | [`atlas/`](atlas) | The atlas template and data (`src/`) and the scripts that build it and regenerate its data. |
 | [`data/`](data) | Where the input files go (not versioned) and how to obtain each one. |
+| [`results/dgt_tables.xlsx`](results/dgt_tables.xlsx) | The aggregated tables of the paper (one sheet per table), exactly as the notebook wrote them in the run reported in the paper. Aggregates only; no individual crash. |
 | [`outputs/`](outputs) | Where the notebook writes tables, figures, caches and the reproducibility manifest (not versioned). |
 
 ## The analysis in brief
